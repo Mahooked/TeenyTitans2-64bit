@@ -13,6 +13,7 @@ public class BuildScript
         PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
         PlayerSettings.bundleVersion = "1.1.4";
+        PlayerSettings.Android.bundleVersionCode = 1;
         PlayerSettings.productName = "Teeny Titans 2";
 
         BuildPlayerOptions opts = new BuildPlayerOptions();
@@ -32,4 +33,3 @@ public class BuildScript
         EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 }
-

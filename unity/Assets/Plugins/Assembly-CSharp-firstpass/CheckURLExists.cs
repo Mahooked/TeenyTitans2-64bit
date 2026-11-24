@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class CheckURLExists
 {
+#if UNITY_IOS
 	[DllImport("__Internal")]
 	private static extern bool _CheckURL(string url);
+#endif
 
 	public static bool CheckURL(string url)
 	{
+#if UNITY_IOS
 		return _CheckURL(url);
+#else
+		return true;
+#endif
 	}
 
 	public static bool AndroidAppInstalled(string bundleID)

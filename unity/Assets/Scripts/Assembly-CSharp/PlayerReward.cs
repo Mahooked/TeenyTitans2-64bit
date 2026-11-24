@@ -3,6 +3,9 @@ using System;
 [Serializable]
 public class PlayerReward
 {
+	[NonSerialized]
+	public PlayerReward[] eggRewards;
+
 	public PlayerRewardType type;
 
 	public CurrencyType currencyType;
@@ -14,8 +17,6 @@ public class PlayerReward
 	public int itemUID = -1;
 
 	public CharacterRewardData figure;
-
-	public PlayerReward[] eggRewards;
 
 	public int characterUID = -1;
 
