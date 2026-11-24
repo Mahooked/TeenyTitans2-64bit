@@ -26,7 +26,7 @@
 - [x] JDK 11 installed (Temurin)
 - [x] BuildScript.BuildAndroid64 configured (IL2CPP, ARM64 + x86_64)
 - [x] APK build: **SUCCESS** — IL2CPP, arm64-v8a + x86_64, 418 MB. Verified lib/arm64-v8a and lib/x86_64 present.
-- [ ] Verify APK installs on 64-bit device/emulator (pending)
+- [x] APK installed and launched on a 64-bit Android device (package: com.GrumpyfaceStudios.TeenyTitans2). App runs (network config fetch fails offline, expected).
 
 ## Phase 4: GitHub Repository ??
 - [x] Local repo initialized
@@ -38,6 +38,7 @@
 - Binary game assets (textures, meshes, audio, scenes content) are not stored in git (size). Regenerate via AssetRipper from original APK.
 - TT2NetNetworkDiscovery stubbed (multiplayer LAN discovery non-functional until reimplemented).
 - Some demo/standard-asset code removed.
+
 
 
 
