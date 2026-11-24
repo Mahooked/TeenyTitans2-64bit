@@ -25,7 +25,7 @@
 - [x] Android SDK/NDK installed via Unity Hub
 - [x] JDK 11 installed (Temurin)
 - [x] BuildScript.BuildAndroid64 configured (IL2CPP, ARM64 + x86_64)
-- [~] APK build configured (IL2CPP, ARM64 + x86_64); build attempted but hit Unity serialization-depth warnings on AssetRipper-exported data. Compile: 0 errors. Runtime build is the next task.
+- [ ] APK build: Unity crashed during IL2CPP build due to serialization-depth warnings in AssetRipper-exported data (recursive PlayerReward/CharacterRewardData). Needs data cleanup. Compile: 0 errors.
 - [ ] Verify APK installs on 64-bit device/emulator
 
 ## Phase 4: GitHub Repository ??
@@ -38,4 +38,5 @@
 - Binary game assets (textures, meshes, audio, scenes content) are not stored in git (size). Regenerate via AssetRipper from original APK.
 - TT2NetNetworkDiscovery stubbed (multiplayer LAN discovery non-functional until reimplemented).
 - Some demo/standard-asset code removed.
+
 
