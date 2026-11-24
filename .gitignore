@@ -1,0 +1,13 @@
+# Unity
+Library/
+Temp/
+Obj/
+Build/
+Logs/
+*.apk
+*.aab
+*.unitypackage
+
+# OS
+.DS_Store
+Thumbs.db

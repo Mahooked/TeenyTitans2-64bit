@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Init.unity
+    guid: e2a5181869848a9468b79b3ce2e19f8b
+  - enabled: 1
+    path: Assets/Scenes/InitTwo.unity
+    guid: bf54dc34c6e14dc44b261e6a4170ca83
+  - enabled: 1
+    path: Assets/Scenes/Battle.unity
+    guid: 4d7c6b78374177e408a50157484d7566
+  - enabled: 1
+    path: Assets/Scenes/PreBattle.unity
+    guid: 49f521247861e3e4b9b3f84c97a1e6c3
+  - enabled: 1
+    path: Assets/Scenes/TitanTower.unity
+    guid: e6157542438fabe4fa1cae337b15d4f2
+  - enabled: 1
+    path: Assets/Scenes/Transition.unity
+    guid: cafecd4cf0ee896449e0bf7a5835186f
+  - enabled: 1
+    path: Assets/Scenes/Challenge.unity
+    guid: d88373db5d8a44e41907b87f3b20b80e
+  - enabled: 1
+    path: Assets/Scenes/ShopTest.unity
+    guid: 7a41468936d88124696efcb28f721a0c
+  - enabled: 1
+    path: Assets/Scenes/Tournament.unity
+    guid: 083c65839057ede4a9ef783c502844b8
+  - enabled: 1
+    path: Assets/Scenes/City_Gotham.unity
+    guid: 9eb3d1e62060c91498157b53c23ab7dc
+  - enabled: 1
+    path: Assets/Scenes/City_WayneManor.unity
+    guid: 9b5207d65383aae43b7f2971203b7afd
+  - enabled: 1
+    path: Assets/Scenes/City_JumpCityNew.unity
+    guid: bc0f1d5eded37754d9cb3fc1b4e03383
+  - enabled: 1
+    path: Assets/Scenes/RepaintShop.unity
+    guid: 1be9a401e58a18e4d903d84454be67ef
+  - enabled: 1
+    path: Assets/Scenes/RiddlerShop.unity
+    guid: 67461ea13b33c774e9c5abd7d2a0f8e0
+  - enabled: 1
+    path: Assets/Scenes/City_Arkham.unity
+    guid: 19ebdb2dcdb6f044598b46a524040600
+  - enabled: 1
+    path: Assets/Scenes/City_Metropolis.unity
+    guid: 5d670381b7dd3994e935f6d321a8626b
+  - enabled: 1
+    path: Assets/Scenes/City_HallOfJustice.unity
+    guid: 92ca4c315d51cea46bddde7d7d1cde42
+  - enabled: 1
+    path: Assets/Scenes/CharacterSelect_Elevator.unity
+    guid: cc875ad77aa266c49b87383265bb0903
+  - enabled: 1
+    path: Assets/Scenes/NewGameIntro.unity
+    guid: b53d46926340e964292814e07681185f
+  - enabled: 1
+    path: Assets/Scenes/LegionOfDoomMode.unity
+    guid: 35da068051c30e14db122a676ce8ca3d
+  - enabled: 1
+    path: Assets/Scenes/PreBattleLOD.unity
+    guid: 9b6164405dc13a84a875c37b2ef8dfb9
