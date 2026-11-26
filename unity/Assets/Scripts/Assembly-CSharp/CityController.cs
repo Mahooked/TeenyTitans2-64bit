@@ -663,7 +663,8 @@ public class CityController : MonoBehaviour
 			yield return null;
 		}
 		if (cityCharacter == null) yield break;
-		yield return new WaitUntil(() => cityCharacter.animator != null);
+		float _t = Time.time;
+		yield return new WaitUntil(() => cityCharacter == null || cityCharacter.animator != null || Time.time - _t > 3f);
 		if (SceneManager.GetActiveScene().name == "City_JumpCityNew")
 		{
 			if (cityCharacter != null && cityStartPathNode != null && !cityCharacter.CanReachNode(cityStartPathNode, allowInactiveNodes: false) && cityCharacter.CanReachNode(cityStartPathNode, allowInactiveNodes: true))

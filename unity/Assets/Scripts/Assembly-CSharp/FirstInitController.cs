@@ -31,7 +31,7 @@ public class FirstInitController : MonoBehaviour
 		{
 			genericDialogBox.headerText.text = Language.Get("INCOMPATIBLE_SAVE_HEADER", "MENUS,GUI");
 			genericDialogBox.messageText.text = Language.Get("INCOMPATIBLE_SAVE_MESSAGE", "MENUS,GUI");
-			genericDialogBox.gameObject.SetActive(true);
+			genericDialogBox.gameObject.SetActive(value: true);
 			while (true)
 			{
 				yield return null;
@@ -41,6 +41,8 @@ public class FirstInitController : MonoBehaviour
 		{
 			DailyMissionManager.instance.ForceGenerateMission();
 		}
+		Debug.Log("Loading InitTwo scene...");
 		SceneManager.LoadScene("InitTwo");
+		Debug.Log("InitTwo loaded");
 	}
 }

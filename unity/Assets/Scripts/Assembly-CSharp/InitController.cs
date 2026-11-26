@@ -132,10 +132,10 @@ public class InitController : MonoBehaviour
 				videoManager.Stop();
 				break;
 			}
-			if (Time.time - timeStart > 10f)
+			if (Time.time - timeStart > 1f)
 			{
 				didTimeOut = true;
-				videoManager.Stop();
+				try { videoManager.Stop(); } catch {}
 				break;
 			}
 		}
