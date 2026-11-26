@@ -86,6 +86,7 @@ public class NewGameIntroController : MonoBehaviour
 
 	private IEnumerator Start()
 	{
+		yield break;
 		if (completeAllTutorialsMode)
 		{
 			completeAllTutorialsMode = false;
@@ -95,7 +96,7 @@ public class NewGameIntroController : MonoBehaviour
 		bool videoFailed = false;
 		skipButton.enabled = false;
 		skipText.color = new Color(1f, 1f, 1f, 0f);
-		guiCamera.SetActive(false);
+		guiCamera.SetActive(value: false);
 		if (LoadingScreenCover.isActive)
 		{
 			yield return new WaitUntil(() => LoadingScreenCover.outroFinished);
@@ -118,12 +119,12 @@ public class NewGameIntroController : MonoBehaviour
 		}
 		if (Language.CurrentLanguage() != LanguageCode.EN)
 		{
-			captionManager.gameObject.SetActive(true);
+			captionManager.gameObject.SetActive(value: true);
 			captionManager.StartVideoCaption(cinematicPart1Caption);
 		}
 		else
 		{
-			captionManager.gameObject.SetActive(false);
+			captionManager.gameObject.SetActive(value: false);
 		}
 		if (Application.platform == RuntimePlatform.IPhonePlayer)
 		{
@@ -167,7 +168,7 @@ public class NewGameIntroController : MonoBehaviour
 		Texture2D blackTexture = Resources.Load<Texture2D>("Textures/Black");
 		MeshRenderer mediaControllerRenderer = mediaController.gameObject.GetComponent<MeshRenderer>();
 		Camera mediaControllerCamera = mediaController.transform.parent.GetComponent<Camera>();
-		mediaControllerCamera.gameObject.SetActive(true);
+		mediaControllerCamera.gameObject.SetActive(value: true);
 		bool videoFinished = false;
 		MediaPlayerCtrl.VideoEnd handleVideoEnd = () =>
 		{
@@ -182,17 +183,14 @@ public class NewGameIntroController : MonoBehaviour
 			Debug.Log("Skip Button Clicked...");
 			skipVideo = true;
 		};
-		guiCamera.SetActive(true);
+		guiCamera.SetActive(value: true);
 		skipButton.OnClick += handleSkipButtonClicked;
 		Debug.Log("Skip Button On Click, Registered...");
 		while (!videoFinished && !videoFailed && !skipVideo)
 		{
 			if (!showingSkip && Input.GetMouseButtonDown(0))
 			{
-				if (skipSequence != null)
-				{
-					skipSequence.Kill();
-				}
+				skipSequence?.Kill();
 				showingSkip = true;
 				try
 				{
@@ -227,20 +225,17 @@ public class NewGameIntroController : MonoBehaviour
 			yield return null;
 		}
 		skipButton.OnClick -= handleSkipButtonClicked;
-		if (skipSequence != null)
-		{
-			skipSequence.Kill();
-		}
+		skipSequence?.Kill();
 		skipText.color = new Color(1f, 1f, 1f, 0f);
 		skipButton.enabled = false;
-		skipButton.gameObject.SetActive(false);
-		guiCamera.SetActive(false);
+		skipButton.gameObject.SetActive(value: false);
+		guiCamera.SetActive(value: false);
 		MediaPlayerCtrl mediaPlayerCtrl2 = mediaController;
 		mediaPlayerCtrl2.OnEnd = (MediaPlayerCtrl.VideoEnd)Delegate.Remove(mediaPlayerCtrl2.OnEnd, handleVideoEnd);
-		captionManager.gameObject.SetActive(false);
+		captionManager.gameObject.SetActive(value: false);
 		mediaController.Stop();
 		mediaControllerRenderer.material.mainTexture = blackTexture;
-		mediaController.gameObject.SetActive(false);
+		mediaController.gameObject.SetActive(value: false);
 		if (Application.platform == RuntimePlatform.IPhonePlayer)
 		{
 			Screen.autorotateToLandscapeLeft = false;
@@ -263,10 +258,10 @@ public class NewGameIntroController : MonoBehaviour
 		Player.instance.SetTrigger("FirstBattleTutorial");
 		yield return new WaitUntil(() => battleSceneAsync.isDone);
 		SceneManager.SetActiveScene(SceneManager.GetSceneByName("Battle"));
-		audioListener.gameObject.SetActive(false);
+		audioListener.gameObject.SetActive(value: false);
 		Tweener fadeTween = blackBG.material.DOFade(0f, fadeOutTimeToFirstBattle).SetEase(Ease.Linear);
 		yield return fadeTween.WaitForCompletion();
-		mediaControllerCamera.gameObject.SetActive(false);
+		mediaControllerCamera.gameObject.SetActive(value: false);
 		while (BattleController.instance == null)
 		{
 			yield return null;
@@ -287,10 +282,10 @@ public class NewGameIntroController : MonoBehaviour
 		blackBG.material.color = Color.clear;
 		Tweener fadeInTween = blackBG.material.DOFade(1f, endOfBattleFadeInTime).SetEase(Ease.Linear);
 		yield return fadeInTween.WaitForCompletion();
-		mediaControllerCamera.gameObject.SetActive(true);
-		mediaController.gameObject.SetActive(true);
+		mediaControllerCamera.gameObject.SetActive(value: true);
+		mediaController.gameObject.SetActive(value: true);
 		videoFailed = false;
-		audioListener.gameObject.SetActive(true);
+		audioListener.gameObject.SetActive(value: true);
 		BattleController.instance.enemyBattleCamera.camera.enabled = false;
 		BattleController.instance.guiCamera.enabled = false;
 		BattleController.instance.playerBattleCamera.camera.enabled = false;
@@ -308,7 +303,7 @@ public class NewGameIntroController : MonoBehaviour
 		}
 		if (Language.CurrentLanguage() != LanguageCode.EN)
 		{
-			captionManager.gameObject.SetActive(true);
+			captionManager.gameObject.SetActive(value: true);
 			captionManager.StartVideoCaption(cinematicPart2Caption);
 		}
 		if (Application.platform == RuntimePlatform.IPhonePlayer)
@@ -326,17 +321,14 @@ public class NewGameIntroController : MonoBehaviour
 		mediaPlayerCtrl3.OnEnd = (MediaPlayerCtrl.VideoEnd)Delegate.Combine(mediaPlayerCtrl3.OnEnd, handleVideoEnd);
 		skipVideo = false;
 		showingSkip = false;
-		skipButton.gameObject.SetActive(true);
-		guiCamera.SetActive(true);
+		skipButton.gameObject.SetActive(value: true);
+		guiCamera.SetActive(value: true);
 		skipButton.OnClick += handleSkipButtonClicked;
 		while (!videoFinished && !videoFailed && !skipVideo)
 		{
 			if (!showingSkip && Input.GetMouseButtonDown(0))
 			{
-				if (skipSequence != null)
-				{
-					skipSequence.Kill();
-				}
+				skipSequence?.Kill();
 				showingSkip = true;
 				skipSequence = DOTween.Sequence();
 				skipSequence.Append(skipText.DOFade(1f, 0.33f).OnComplete(() =>
@@ -366,17 +358,14 @@ public class NewGameIntroController : MonoBehaviour
 			orientationCheckRoutine = null;
 		}
 		skipButton.OnClick -= handleSkipButtonClicked;
-		if (skipSequence != null)
-		{
-			skipSequence.Kill();
-		}
+		skipSequence?.Kill();
 		skipText.color = new Color(1f, 1f, 1f, 0f);
 		skipButton.enabled = false;
-		skipButton.gameObject.SetActive(false);
-		guiCamera.SetActive(false);
+		skipButton.gameObject.SetActive(value: false);
+		guiCamera.SetActive(value: false);
 		MediaPlayerCtrl mediaPlayerCtrl4 = mediaController;
 		mediaPlayerCtrl4.OnEnd = (MediaPlayerCtrl.VideoEnd)Delegate.Remove(mediaPlayerCtrl4.OnEnd, handleVideoEnd);
-		captionManager.gameObject.SetActive(false);
+		captionManager.gameObject.SetActive(value: false);
 		mediaController.Stop();
 		mediaControllerRenderer.material.mainTexture = blackTexture;
 		if (Application.platform == RuntimePlatform.IPhonePlayer)
@@ -395,9 +384,9 @@ public class NewGameIntroController : MonoBehaviour
 		}
 		characterSelectOp.allowSceneActivation = true;
 		yield return new WaitUntil(() => characterSelectOp.isDone);
-		audioListener.gameObject.SetActive(false);
-		mediaController.gameObject.SetActive(false);
-		mediaControllerCamera.gameObject.SetActive(false);
+		audioListener.gameObject.SetActive(value: false);
+		mediaController.gameObject.SetActive(value: false);
+		mediaControllerCamera.gameObject.SetActive(value: false);
 		Tween fadeTween2 = blackBG.material.DOFade(0f, fadeOutTimeToSelectScreen).SetEase(Ease.Linear);
 		yield return fadeTween2.WaitForCompletion();
 		GFAudioManager.instance.SetGroupVolume(GFAudioManager.MUSIC_GROUP, 1f);
@@ -467,14 +456,14 @@ public class NewGameIntroController : MonoBehaviour
 
 	private IEnumerator CompleteAllTutorialsSequence()
 	{
-		guiCamera.SetActive(false);
+		guiCamera.SetActive(value: false);
 		blackBG.material.DOFade(0f, 0.01f);
 		AsyncOperation characterSelectOp = SceneManager.LoadSceneAsync(characterSelectSceneName, LoadSceneMode.Additive);
 		characterSelectOp.allowSceneActivation = true;
 		yield return new WaitUntil(() => characterSelectOp.isDone);
-		audioListener.gameObject.SetActive(false);
-		mediaController.gameObject.SetActive(false);
-		mediaController.transform.parent.GetComponent<Camera>().gameObject.SetActive(false);
+		audioListener.gameObject.SetActive(value: false);
+		mediaController.gameObject.SetActive(value: false);
+		mediaController.transform.parent.GetComponent<Camera>().gameObject.SetActive(value: false);
 		bool continueSequence = false;
 		Action continueSequenceAction = () =>
 		{

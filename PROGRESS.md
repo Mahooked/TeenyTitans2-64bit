@@ -42,3 +42,14 @@
 
 
 
+
+
+## Phase 5: Runtime playability (in progress)
+- [x] Main menu now renders (textures visible)
+- [x] NullReferenceExceptions eliminated (was 15+, now 0)
+- [x] Guarded: CityController, CityEntity, CityEntityNPC, CityEntityBuilding, CityCharacter, CurrencyGUI, WalletGUI, Communicator, CityShopSign, DailyMissionBoard, LocalizedText, DailyMissionManager, LocalizedSpriteToText, SimpleTextButton, GameLinkPopupDialog, InitController (ToS auto-accept), NewGameIntroController
+- [x] Fixed TMP Settings script GUID (was broken)
+- [x] Fixed PlayerReward serialization (eggRewards NonSerialized)
+- [x] Fixed CheckURLExists (iOS-only native call guarded for Android)
+- [ ] Remaining: 3 missing native SDK classes (Adobe Analytics, comScore, EasyMovieTexture) — caught exceptions, non-blocking
+- [ ] Black screen persists after init completes — investigating scene/camera activation

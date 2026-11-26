@@ -41,7 +41,7 @@ public class InitController : MonoBehaviour
 	{
 		MediaPlayerCtrl mediaPlayerCtrl = videoManager;
 		mediaPlayerCtrl.OnEnd = (MediaPlayerCtrl.VideoEnd)Delegate.Combine(mediaPlayerCtrl.OnEnd, new MediaPlayerCtrl.VideoEnd(OnVideoEnd));
-		dfpBanner.gameObject.SetActive(false);
+		dfpBanner.gameObject.SetActive(value: false);
 	}
 
 	private void OnDestroy()
@@ -91,14 +91,12 @@ public class InitController : MonoBehaviour
 		Debug.Log("GameSaveData.saveVersion " + SaveUtility.GameSaveData.saveVersion);
 		if (tutorialManager != null)
 		{
-			tutorialManager.gameObject.SetActive(true);
+			tutorialManager.gameObject.SetActive(value: true);
 		}
 		Debug.LogFormat("Has player accepted the ToS and Privacy Policy?: {0}", (PlayerPrefs.GetInt("AcceptedTerms") != 0) ? "YES" : "NO");
-		if (PlayerPrefs.GetInt("AcceptedTerms", 0) == 0)
-		{
-			tosPopup.gameObject.SetActive(true);
-			yield return new WaitWhile(() => tosPopup.gameObject.activeSelf);
-		}
+		// Auto-accept ToS (UI assets are broken in decompiled build)
+		PlayerPrefs.SetInt("AcceptedTerms", 1);
+		PlayerPrefs.Save();
 		bool videoError = false;
 		bool didTimeOut = false;
 		float timeStart = Time.time;
@@ -113,7 +111,7 @@ public class InitController : MonoBehaviour
 		if (!didTimeOut)
 		{
 			yield return new WaitForEndOfFrame();
-			videoManager.transform.parent.gameObject.SetActive(true);
+			videoManager.transform.parent.gameObject.SetActive(value: true);
 		}
 		while (!isVideoDone && !didTimeOut)
 		{
@@ -142,7 +140,7 @@ public class InitController : MonoBehaviour
 			}
 		}
 		isVideoDone = false;
-		videoManager.transform.parent.gameObject.SetActive(false);
+		videoManager.transform.parent.gameObject.SetActive(value: false);
 		videoManager.gameObject.GetComponent<MeshRenderer>().material.mainTexture = Resources.Load("Textures/Black") as Texture2D;
 		if (videoError || didTimeOut)
 		{
@@ -154,7 +152,7 @@ public class InitController : MonoBehaviour
 		tk2dSprite dcLogo = splashImages.dcLogo;
 		tk2dSprite wbLogo = splashImages.wbLogo;
 		dcLogo.color = new Color(1f, 1f, 1f, 0f);
-		dcLogo.gameObject.SetActive(true);
+		dcLogo.gameObject.SetActive(value: true);
 		DOTween.ToAlpha(() => dcLogo.color, (Color x) =>
 		{
 			dcLogo.color = x;
@@ -179,7 +177,7 @@ public class InitController : MonoBehaviour
 		}, 0f, durationLogoFadeOut).SetEase(Ease.OutSine);
 		yield return new WaitForSeconds(durationLogoFadeOut + durationBetweenLogos);
 		wbLogo.color = new Color(1f, 1f, 1f, 0f);
-		wbLogo.gameObject.SetActive(true);
+		wbLogo.gameObject.SetActive(value: true);
 		DOTween.ToAlpha(() => wbLogo.color, (Color x) =>
 		{
 			wbLogo.color = x;
@@ -203,13 +201,13 @@ public class InitController : MonoBehaviour
 			wbLogo.color = x;
 		}, 0f, durationLogoFadeOut).SetEase(Ease.OutSine);
 		yield return new WaitForSeconds(durationLogoFadeOut + durationBetweenLogos);
-		dcLogo.gameObject.SetActive(false);
-		wbLogo.gameObject.SetActive(false);
+		dcLogo.gameObject.SetActive(value: false);
+		wbLogo.gameObject.SetActive(value: false);
 		if (!didTimeOut)
 		{
 			videoManager.Load("Videos/loader_grumpyface.mp4");
 			yield return new WaitForEndOfFrame();
-			videoManager.transform.parent.gameObject.SetActive(true);
+			videoManager.transform.parent.gameObject.SetActive(value: true);
 		}
 		while (!isVideoDone && !didTimeOut)
 		{
@@ -242,9 +240,9 @@ public class InitController : MonoBehaviour
 		yield return new WaitForEndOfFrame();
 		if (DFP.Instance.bannerLoaded)
 		{
-			dfpBanner.gameObject.SetActive(true);
+			dfpBanner.gameObject.SetActive(value: true);
 			yield return StartCoroutine(dfpBanner.Show());
-			dfpBanner.gameObject.SetActive(false);
+			dfpBanner.gameObject.SetActive(value: false);
 		}
 		TitleScreenController.shouldShowTitleScreen = true;
 		CityController.fromInitScene = true;
@@ -256,11 +254,11 @@ public class InitController : MonoBehaviour
 		if (!string.IsNullOrEmpty(SaveUtility.GetString("PlayerScene")))
 		{
 			Debug.Log("Load Initial Scene" + SaveUtility.GetString("PlayerScene"));
-			LoadingScreenCover.LoadScene(SaveUtility.GetString("PlayerScene"), true, "Init", true);
+			LoadingScreenCover.LoadScene(SaveUtility.GetString("PlayerScene"), showLoadingScreen: true, "Init", showDefaultSkin: true);
 		}
 		else
 		{
-			LoadingScreenCover.LoadScene(GameManager.instance.gameSettings.citySceneName, true, "Init", true);
+			LoadingScreenCover.LoadScene(GameManager.instance.gameSettings.citySceneName, showLoadingScreen: true, "Init", showDefaultSkin: true);
 		}
 	}
 

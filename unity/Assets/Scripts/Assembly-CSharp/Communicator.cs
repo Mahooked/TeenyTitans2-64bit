@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 
@@ -11,29 +9,14 @@ public class Communicator : MonoBehaviour
 {
 	public enum ViewType
 	{
-		DayNight = 0,
-		Mail = 1,
-		Missions = 2,
-		FlashSale = 3,
-		LOD = 4
+		DayNight,
+		Mail,
+		Missions,
+		FlashSale,
+		LOD
 	}
 
 	public static string afterBattleConvoName;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action StartDayTime__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action StartNightTime__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action<NewsFlash> NewsFlashStarted__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action<NewsFlash> NewsFlashEnded__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action MissionScrollerWillAppear__BackingField;
 
 	public float fullCycleRealSeconds = 480f;
 
@@ -249,13 +232,7 @@ public class Communicator : MonoBehaviour
 
 	private bool debugDailyMissions;
 
-	public List<CommunicatorMission> SideMissions
-	{
-		get
-		{
-			return sideMissions;
-		}
-	}
+	public List<CommunicatorMission> SideMissions => sideMissions;
 
 	public bool pauseTime
 	{
@@ -283,143 +260,17 @@ public class Communicator : MonoBehaviour
 
 	public static Communicator instance { get; private set; }
 
-	public bool PopUpActive
-	{
-		get
-		{
-			return MissionScrollerActive() || MailScrollerActive() || LODCityMenuActive();
-		}
-	}
+	public bool PopUpActive => MissionScrollerActive() || MailScrollerActive() || LODCityMenuActive();
 
-	public event Action StartDayTime
-	{
-		add
-		{
-			Action action = StartDayTime__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StartDayTime__BackingField, (Action)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action action = StartDayTime__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StartDayTime__BackingField, (Action)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action StartDayTime;
 
-	public event Action StartNightTime
-	{
-		add
-		{
-			Action action = StartNightTime__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StartNightTime__BackingField, (Action)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action action = StartNightTime__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StartNightTime__BackingField, (Action)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action StartNightTime;
 
-	public event Action<NewsFlash> NewsFlashStarted
-	{
-		add
-		{
-			Action<NewsFlash> action = NewsFlashStarted__BackingField;
-			Action<NewsFlash> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref NewsFlashStarted__BackingField, (Action<NewsFlash>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<NewsFlash> action = NewsFlashStarted__BackingField;
-			Action<NewsFlash> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref NewsFlashStarted__BackingField, (Action<NewsFlash>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action<NewsFlash> NewsFlashStarted;
 
-	public event Action<NewsFlash> NewsFlashEnded
-	{
-		add
-		{
-			Action<NewsFlash> action = NewsFlashEnded__BackingField;
-			Action<NewsFlash> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref NewsFlashEnded__BackingField, (Action<NewsFlash>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<NewsFlash> action = NewsFlashEnded__BackingField;
-			Action<NewsFlash> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref NewsFlashEnded__BackingField, (Action<NewsFlash>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action<NewsFlash> NewsFlashEnded;
 
-	public event Action MissionScrollerWillAppear
-	{
-		add
-		{
-			Action action = MissionScrollerWillAppear__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref MissionScrollerWillAppear__BackingField, (Action)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action action = MissionScrollerWillAppear__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref MissionScrollerWillAppear__BackingField, (Action)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action MissionScrollerWillAppear;
 
 	private void Awake()
 	{
@@ -429,6 +280,7 @@ public class Communicator : MonoBehaviour
 
 	private void OnEnable()
 	{
+		if (Player.instance == null) return;
 		Player.instance.MissionAdded += HandleMissionAdded;
 		Player.instance.MissionCompleted += HandleMissionCompleted;
 		Player.instance.MissionUpdated += HandleMissionUpdated;
@@ -442,11 +294,11 @@ public class Communicator : MonoBehaviour
 		Player.instance.pvpData.FriendRequestDeclined += HandleFriendRequestAcceptedDeclined;
 		Player.instance.TriggerSet += HandleTriggerSet;
 		PauseManager.instance.Paused += HandlePaused;
-		sideMissionPrototype.SetActive(false);
-		sideMissionDailyPrototype.SetActive(false);
+		sideMissionPrototype.SetActive(value: false);
+		sideMissionDailyPrototype.SetActive(value: false);
 		missionTickerAnimator.Play("Communicator_MissionTicker_Outro", 0, 1f);
-		missionTicker.SetActive(false);
-		newsTicker.SetActive(false);
+		missionTicker.SetActive(value: false);
+		newsTicker.SetActive(value: false);
 		HandlePvpRequestsUpdated();
 	}
 
@@ -476,10 +328,10 @@ public class Communicator : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		StartDayTime__BackingField = null;
-		StartNightTime__BackingField = null;
-		NewsFlashStarted__BackingField = null;
-		NewsFlashEnded__BackingField = null;
+		StartDayTime = null;
+		StartNightTime = null;
+		NewsFlashStarted = null;
+		NewsFlashEnded = null;
 		if (TitleScreenController.instance != null)
 		{
 			TitleScreenController.instance.LanguageChanged -= HandleLanguageChanged;
@@ -536,8 +388,8 @@ public class Communicator : MonoBehaviour
 			{
 				animator.Play("communicator_hide_intro", 0, 1f);
 			}
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 			HidePopUps();
 		}
 	}
@@ -559,56 +411,55 @@ public class Communicator : MonoBehaviour
 		}
 		if (CommunicatorManager.instance != null)
 		{
-			UnityEngine.Debug.Log("Communicator Manager Initialized");
+			Debug.Log("Communicator Manager Initialized");
 		}
 		if (TitleScreenController.instance != null)
 		{
 			TitleScreenController.instance.LanguageChanged += HandleLanguageChanged;
 		}
-		currentDay = Player.instance.currentDay;
-		currentTime = Player.instance.currentTime;
-		daysPassedInCity = Player.instance.GetDaysPassedInCities();
+		if (Player.instance != null) { currentDay = Player.instance.currentDay; currentTime = Player.instance.currentTime; daysPassedInCity = Player.instance.GetDaysPassedInCities(); }
+		if (daysPassedInCity == null) daysPassedInCity = new System.Collections.Generic.Dictionary<CityName,int>();
 		string ds = "Start, Days Passed in Cities: \n";
 		foreach (KeyValuePair<CityName, int> item in daysPassedInCity)
 		{
 			string text = ds;
 			ds = string.Concat(text, " --- ", item.Key, ", days passed: ", item.Value);
 		}
-		UnityEngine.Debug.Log(ds);
+		Debug.Log(ds);
 		previousDay = currentDay;
 		previousTime = currentTime;
 		float timeOfDayInSeconds = 360f / (fullCycleRealSeconds / (float)currentTime);
-		dayNightCycle.transform.localEulerAngles = new Vector3(0f, 0f, 0f - timeOfDayInSeconds);
+		if (dayNightCycle != null) dayNightCycle.transform.localEulerAngles = new Vector3(0f, 0f, 0f - timeOfDayInSeconds);
 		if ((int)(float)currentTime >= (int)(fullCycleRealSeconds / 2f))
 		{
 			isDayTime = false;
-			if (StartNightTime__BackingField != null)
+			if (StartNightTime != null)
 			{
-				StartNightTime__BackingField();
+				StartNightTime();
 			}
 		}
 		else
 		{
 			isDayTime = true;
-			if (StartDayTime__BackingField != null)
+			if (StartDayTime != null)
 			{
-				StartDayTime__BackingField();
+				StartDayTime();
 			}
 		}
-		DayNightCard.instance.UpdateForTimeOfDay(isDayTime);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(false);
+		if (DayNightCard.instance != null) DayNightCard.instance.UpdateForTimeOfDay(isDayTime);
+		if (flashSaleTimerText != null) flashSaleTimerText.transform.parent.gameObject.SetActive(value: false);
 		Communicator communicator = this;
 		Communicator communicator2 = this;
 		ViewType viewType = ViewType.DayNight;
 		communicator2.prevViewType = ViewType.DayNight;
 		communicator.activeViewType = viewType;
-		lodCityMenu.EnterLODClicked += HandleEnterLODBtnClicked;
-		lodCityMenu.ExitClicked += HandleExitLODPopupBtnClicked;
+		if (lodCityMenu != null) lodCityMenu.EnterLODClicked += HandleEnterLODBtnClicked;
+		if (lodCityMenu != null) lodCityMenu.ExitClicked += HandleExitLODPopupBtnClicked;
 		if (TitleScreenController.instance == null || !TitleScreenController.instance.titleScreenActive)
 		{
 			yield return new WaitForEndOfFrame();
 			UpdateMail();
-			UpdateMissions(false, (!(cityController != null)) ? CityName.Any : cityController.cityName);
+			UpdateMissions(playMissionSideIntro: false, (!(cityController != null)) ? CityName.Any : cityController.cityName);
 			UpdateNews();
 			StartCoroutine("CheckForUnCollectedMission");
 		}
@@ -624,7 +475,7 @@ public class Communicator : MonoBehaviour
 		UpdateMail();
 		UpdateMissions();
 		UpdateNews();
-		if (base.gameObject.activeInHierarchy)
+		if (gameObject.activeInHierarchy)
 		{
 			StartCoroutine("CheckForUnCollectedMission");
 		}
@@ -709,11 +560,11 @@ public class Communicator : MonoBehaviour
 			CheckTimeInitiatedEvents();
 			if (missionsPopUp.activeSelf && missionsPopUpAnimator.IsName("communicator_missionpopup_Outro") && missionsPopUpAnimator.NormalizedTime() > 0.96f)
 			{
-				missionsPopUp.SetActive(false);
+				missionsPopUp.SetActive(value: false);
 			}
 			if (mailPopUp.activeSelf && mailPopUpAnimator.IsName("communicator_emailpopup_Outro") && mailPopUpAnimator.NormalizedTime() > 0.96f)
 			{
-				mailPopUp.SetActive(false);
+				mailPopUp.SetActive(value: false);
 			}
 		}
 	}
@@ -725,8 +576,7 @@ public class Communicator : MonoBehaviour
 		{
 			currentTime -= (int)fullCycleRealSeconds;
 			currentDay++;
-			int value;
-			if (daysPassedInCity.TryGetValue(CityController.instance.cityName, out value))
+			if (daysPassedInCity.TryGetValue(CityController.instance.cityName, out var value))
 			{
 				daysPassedInCity[CityController.instance.cityName] = value + 1;
 			}
@@ -759,8 +609,7 @@ public class Communicator : MonoBehaviour
 				currentDay++;
 				currentTime = 0;
 				deltaRotation = 0f;
-				int value;
-				if (daysPassedInCity.TryGetValue(CityController.instance.cityName, out value))
+				if (daysPassedInCity.TryGetValue(CityController.instance.cityName, out var value))
 				{
 					daysPassedInCity[CityController.instance.cityName] = value + 1;
 				}
@@ -882,9 +731,9 @@ public class Communicator : MonoBehaviour
 	{
 		yield return new WaitForSeconds(0.5f);
 		UpdateNews();
-		if (StartDayTime__BackingField != null)
+		if (StartDayTime != null)
 		{
-			StartDayTime__BackingField();
+			StartDayTime();
 		}
 	}
 
@@ -892,9 +741,9 @@ public class Communicator : MonoBehaviour
 	{
 		yield return new WaitForSeconds(0.5f);
 		ClearDayNewsFlashSprites();
-		if (StartNightTime__BackingField != null)
+		if (StartNightTime != null)
 		{
-			StartNightTime__BackingField();
+			StartNightTime();
 		}
 	}
 
@@ -943,9 +792,9 @@ public class Communicator : MonoBehaviour
 		if (mailData != null && !mailData.viewed)
 		{
 			animator.Play("communicator_vibrate");
-			antennaLight.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
 			antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_Blink");
-			antennaTail.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
 			antennaLight.SetSprite("gui_communicator_antenna_green");
 			GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_ringtone_newemail", GFAudioManager.SFX_GROUP, string.Empty);
 			if (!currentMail.Contains(mailUID))
@@ -965,19 +814,19 @@ public class Communicator : MonoBehaviour
 
 	private void HandleMySquadOnShow()
 	{
-		SetCommunicatorShown(false);
+		SetCommunicatorShown(show: false);
 	}
 
 	private void HandleMySquadOnHide()
 	{
-		SetCommunicatorShown(true);
+		SetCommunicatorShown(show: true);
 	}
 
 	private void HandleMissionAdded(int missionUID, bool dialogueMission)
 	{
 		animator.Play("communicator_vibrate");
-		antennaLight.gameObject.SetActive(true);
-		antennaTail.gameObject.SetActive(false);
+		antennaLight.gameObject.SetActive(value: true);
+		antennaTail.gameObject.SetActive(value: false);
 		antennaLight.SetSprite("gui_communicator_antenna_purple");
 		Mission mission = GameManager.instance.communicatorDatabase.GetMission(missionUID);
 		if (dialogueMission)
@@ -1019,7 +868,7 @@ public class Communicator : MonoBehaviour
 
 	public void CheckCollectedMissionNewsFlashes()
 	{
-		if (!base.gameObject.activeInHierarchy)
+		if (!gameObject.activeInHierarchy)
 		{
 			return;
 		}
@@ -1029,7 +878,7 @@ public class Communicator : MonoBehaviour
 			NewsFlash newsFlash = newsFlashes[i];
 			if (newsFlash.activateOnMissionComplete && !Player.instance.HasCompletedNewsFlash(newsFlash.uid) && Player.instance.HasMissionCompleted(newsFlash.missionUIDRequired) && activeNewsFlash != newsFlash && !queuedNewsFlashes.Contains(newsFlash))
 			{
-				ActivateBreakingNews(newsFlash, false);
+				ActivateBreakingNews(newsFlash, delayBanner: false);
 			}
 		}
 	}
@@ -1056,14 +905,14 @@ public class Communicator : MonoBehaviour
 	private void HandleMailAdded(int mailUID)
 	{
 		CheckMailUID(mailUID);
-		UpdateMail(false);
+		UpdateMail(updateDaily: false);
 		Player.instance.Save();
 		CheckForCompletedMissions();
 	}
 
 	private void HandleMailViewed(int mailUID)
 	{
-		UpdateMail(false);
+		UpdateMail(updateDaily: false);
 		MailMessage mailMessage = GameManager.instance.communicatorDatabase.GetMailMessage(mailUID);
 		if (mailMessage.missionUID > -1)
 		{
@@ -1082,11 +931,11 @@ public class Communicator : MonoBehaviour
 	{
 		if (Player.instance.totalUnreadMail <= 0)
 		{
-			mailBadge.SetActive(false);
+			mailBadge.SetActive(value: false);
 		}
 		else
 		{
-			mailBadge.SetActive(true);
+			mailBadge.SetActive(value: true);
 			mailNumber.text = Player.instance.totalUnreadMail.ToString();
 		}
 		if (Language.CurrentLanguage() == LanguageCode.RU || Language.CurrentLanguage() == LanguageCode.KO || Language.CurrentLanguage() == LanguageCode.JA)
@@ -1138,7 +987,7 @@ public class Communicator : MonoBehaviour
 				}
 				if (flag)
 				{
-					UnityEngine.Debug.LogFormat("Completed missions required for {0} email, adding to mail messages for the day....", mailMessage.title);
+					Debug.LogFormat("Completed missions required for {0} email, adding to mail messages for the day....", mailMessage.title);
 					if (!mailMessagesForDay.Contains(mailMessage))
 					{
 						mailMessagesForDay.Add(mailMessage);
@@ -1170,21 +1019,15 @@ public class Communicator : MonoBehaviour
 
 	private bool IsComparisonValid(int val1, Comparison comparison, int val2)
 	{
-		switch (comparison)
+		return comparison switch
 		{
-		case Comparison.Exactly:
-			return val1 == val2;
-		case Comparison.MoreThan:
-			return val1 > val2;
-		case Comparison.LessThan:
-			return val1 < val2;
-		case Comparison.AtLeast:
-			return val1 >= val2;
-		case Comparison.AtMost:
-			return val1 <= val2;
-		default:
-			return false;
-		}
+			Comparison.Exactly => val1 == val2, 
+			Comparison.MoreThan => val1 > val2, 
+			Comparison.LessThan => val1 < val2, 
+			Comparison.AtLeast => val1 >= val2, 
+			Comparison.AtMost => val1 <= val2, 
+			_ => false, 
+		};
 	}
 
 	private void UpdateMailPopUpWithUID(int mailUID)
@@ -1277,7 +1120,7 @@ public class Communicator : MonoBehaviour
 			{
 				num3++;
 				CommunicatorMission component = UnityEngine.Object.Instantiate((!mission.isDaily) ? sideMissionPrototype : sideMissionDailyPrototype).GetComponent<CommunicatorMission>();
-				component.gameObject.SetActive(true);
+				component.gameObject.SetActive(value: true);
 				component.transform.parent = sideMissionPrototype.transform.parent;
 				component.transform.localPosition = new Vector3(sideMissionPrototype.transform.localPosition.x, num, sideMissionPrototype.transform.localPosition.z);
 				component.transform.localScale = sideMissionPrototype.transform.localScale;
@@ -1293,24 +1136,24 @@ public class Communicator : MonoBehaviour
 		}
 		if (flag)
 		{
-			sideMissionDailyBanner.SetActive(true);
+			sideMissionDailyBanner.SetActive(value: true);
 			Vector3 localPosition = sideMissionDailyBanner.transform.localPosition;
 			localPosition.y = num + 22f;
 			sideMissionDailyBanner.transform.localPosition = localPosition;
 		}
 		else
 		{
-			sideMissionDailyBanner.SetActive(false);
+			sideMissionDailyBanner.SetActive(value: false);
 		}
 		if (num2 > 0 || flag)
 		{
-			sideMissionHeader.gameObject.SetActive(true);
-			missionsScrollerController.buttonJumpCity.transform.parent.gameObject.SetActive(true);
+			sideMissionHeader.gameObject.SetActive(value: true);
+			missionsScrollerController.buttonJumpCity.transform.parent.gameObject.SetActive(value: true);
 		}
 		else
 		{
-			sideMissionHeader.gameObject.SetActive(false);
-			missionsScrollerController.buttonJumpCity.transform.parent.gameObject.SetActive(false);
+			sideMissionHeader.gameObject.SetActive(value: false);
+			missionsScrollerController.buttonJumpCity.transform.parent.gameObject.SetActive(value: false);
 		}
 		float num5 = 115f;
 		if (num2 > 0 || flag)
@@ -1346,7 +1189,7 @@ public class Communicator : MonoBehaviour
 			Conversation conversation = Resources.Load<Conversation>("Data/TT2/" + afterBattleConvoName);
 			if (conversation != null && cityController != null)
 			{
-				cityController.HandleShowDialogue(conversation, false, null, null, true);
+				cityController.HandleShowDialogue(conversation, showExitButton: false, null, null, trackCompletion: true);
 			}
 			afterBattleConvoName = string.Empty;
 		}
@@ -1362,7 +1205,7 @@ public class Communicator : MonoBehaviour
 				Mission mission2 = GameManager.instance.communicatorDatabase.GetMission(missionData2.uid);
 				if (mission2 != null && mission2.type == MissionType.Story && missionData2.active && !missionData2.collected)
 				{
-					Player.instance.CollectMission(mission2.uid, false);
+					Player.instance.CollectMission(mission2.uid, notify: false);
 				}
 			}
 		}
@@ -1450,7 +1293,7 @@ public class Communicator : MonoBehaviour
 		if (!(communicatorMission == null))
 		{
 			yield return new WaitForEndOfFrame();
-			while (!base.gameObject.activeInHierarchy)
+			while (!gameObject.activeInHierarchy)
 			{
 				yield return new WaitForEndOfFrame();
 			}
@@ -1476,7 +1319,7 @@ public class Communicator : MonoBehaviour
 			if (conversation != null && !Player.instance.IsConversationPlayed(conversation) && !convosPlayed.Contains(cityCharacterConvoName) && cityController != null)
 			{
 				convosPlayed.Add(cityCharacterConvoName);
-				cityController.HandleShowDialogue(conversation, false, null, null, true);
+				cityController.HandleShowDialogue(conversation, showExitButton: false, null, null, trackCompletion: true);
 				afterBattleConvoName = string.Empty;
 			}
 		}
@@ -1488,7 +1331,7 @@ public class Communicator : MonoBehaviour
 			if (conversation2 != null && !Player.instance.IsConversationPlayed(conversation2) && !convosPlayed.Contains(cityCharacterConvoName2) && cityController != null)
 			{
 				convosPlayed.Add(cityCharacterConvoName2);
-				cityController.HandleShowDialogue(conversation2, false, null, null, true, 0.1f);
+				cityController.HandleShowDialogue(conversation2, showExitButton: false, null, null, trackCompletion: true, 0.1f);
 				afterBattleConvoName = string.Empty;
 			}
 		}
@@ -1523,22 +1366,14 @@ public class Communicator : MonoBehaviour
 			if (newsFlash.cityName == CityController.instance.cityName && missionCompletedData != null)
 			{
 				int num = 0;
-				switch (newsFlash.cityName)
+				num = newsFlash.cityName switch
 				{
-				case CityName.Gotham:
-					num = missionCompletedData.gothamDayCompleted;
-					break;
-				case CityName.JumpCity:
-					num = missionCompletedData.jumpCityDayCompleted;
-					break;
-				case CityName.Metropolis:
-					num = missionCompletedData.metropolisDayCompleted;
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-				}
-				int value;
-				daysPassedInCity.TryGetValue(newsFlash.cityName, out value);
+					CityName.Gotham => missionCompletedData.gothamDayCompleted, 
+					CityName.JumpCity => missionCompletedData.jumpCityDayCompleted, 
+					CityName.Metropolis => missionCompletedData.metropolisDayCompleted, 
+					_ => throw new ArgumentOutOfRangeException(), 
+				};
+				daysPassedInCity.TryGetValue(newsFlash.cityName, out var value);
 				if ((newsFlashData == null || (!newsFlashData.completed && value <= newsFlashData.dayActive + newsFlash.durationDays) || (newsFlashData.completed && newsFlash.repeatable && value >= newsFlashData.dayCompleted + newsFlash.dayRepeatInterval)) && value >= num + newsFlash.daysAfter && (currentTime <= newsFlash.timeOfDay || (currentTime >= newsFlash.timeOfDay && currentTime <= newsFlash.timeOfDay + newsFlash.durationTime)) && !currentDayPossibleNewsFlashes.Contains(newsFlash) && (newsFlashData == null || !newsFlashData.completed || newsFlash.repeatable) && (newsFlash.newsFlashUIDRequired < 0 || Player.instance.GetNewsFlashData(newsFlash.newsFlashUIDRequired) != null))
 				{
 					currentDayPossibleNewsFlashes.Add(newsFlash);
@@ -1552,11 +1387,11 @@ public class Communicator : MonoBehaviour
 	{
 		prevViewType = activeViewType;
 		activeViewType = ViewType.FlashSale;
-		dayNight.SetActive(false);
-		mail.SetActive(false);
-		missions.SetActive(false);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(true);
-		legionOfDoom.SetActive(false);
+		dayNight.SetActive(value: false);
+		mail.SetActive(value: false);
+		missions.SetActive(value: false);
+		flashSaleTimerText.transform.parent.gameObject.SetActive(value: true);
+		legionOfDoom.SetActive(value: false);
 		HidePopUps();
 		flashSaleTimer = duration;
 		int num = (int)flashSaleTimer / 60;
@@ -1566,13 +1401,13 @@ public class Communicator : MonoBehaviour
 		flashSaleTimerText.text = text + ":" + text2;
 		if (mailPopUpAnimator.IsNamed("communicator_emailpopup_intro", "communicator_emailpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		if (missionsPopUpAnimator.IsNamed("communicator_missionpopup_intro", "communicator_missionpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 	}
 
@@ -1580,28 +1415,28 @@ public class Communicator : MonoBehaviour
 	{
 		prevViewType = activeViewType;
 		activeViewType = ViewType.DayNight;
-		dayNight.SetActive(true);
-		mail.SetActive(false);
-		missions.SetActive(false);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(false);
-		legionOfDoom.SetActive(false);
+		dayNight.SetActive(value: true);
+		mail.SetActive(value: false);
+		missions.SetActive(value: false);
+		if (flashSaleTimerText != null) flashSaleTimerText.transform.parent.gameObject.SetActive(value: false);
+		legionOfDoom.SetActive(value: false);
 		HidePopUps();
 		if (mailPopUpAnimator.IsNamed("communicator_emailpopup_intro", "communicator_emailpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		if (missionsPopUpAnimator.IsNamed("communicator_missionpopup_intro", "communicator_missionpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		if (activeNewsFlash != null)
 		{
-			antennaLight.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
 			antennaLight.SetSprite("gui_communicator_antenna_blue");
 			antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_On");
-			newsTicker.SetActive(true);
+			newsTicker.SetActive(value: true);
 			if (newsTickerAnimator.IsName("Communicator_NewsTicker_Outro") && missionTickerAnimator.NormalizedTime() > 0.7f)
 			{
 				newsTickerAnimator.Play("Communicator_NewsTicker_Intro");
@@ -1618,16 +1453,16 @@ public class Communicator : MonoBehaviour
 	{
 		prevViewType = activeViewType;
 		activeViewType = ViewType.Missions;
-		dayNight.SetActive(false);
-		mail.SetActive(false);
-		missions.SetActive(true);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(false);
-		legionOfDoom.SetActive(false);
+		dayNight.SetActive(value: false);
+		mail.SetActive(value: false);
+		missions.SetActive(value: true);
+		if (flashSaleTimerText != null) flashSaleTimerText.transform.parent.gameObject.SetActive(value: false);
+		legionOfDoom.SetActive(value: false);
 		HidePopUps();
 		if (mailPopUpAnimator.IsNamed("communicator_emailpopup_intro", "communicator_emailpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		StartCoroutine("ShowMissionTicker");
 		CheckForUnreadMail();
@@ -1638,21 +1473,21 @@ public class Communicator : MonoBehaviour
 	{
 		prevViewType = activeViewType;
 		activeViewType = ViewType.Mail;
-		dayNight.SetActive(false);
-		mail.SetActive(true);
-		missions.SetActive(false);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(false);
-		legionOfDoom.SetActive(false);
+		dayNight.SetActive(value: false);
+		mail.SetActive(value: true);
+		missions.SetActive(value: false);
+		if (flashSaleTimerText != null) flashSaleTimerText.transform.parent.gameObject.SetActive(value: false);
+		legionOfDoom.SetActive(value: false);
 		HidePopUps();
 		if (mailPopUpAnimator.IsNamed("communicator_emailpopup_intro", "communicator_emailpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		if (missionsPopUpAnimator.IsNamed("communicator_missionpopup_intro", "communicator_missionpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		CheckForUnreadMail();
 		CheckForCompletedMissions();
@@ -1666,21 +1501,21 @@ public class Communicator : MonoBehaviour
 	{
 		prevViewType = activeViewType;
 		activeViewType = ViewType.LOD;
-		dayNight.SetActive(false);
-		mail.SetActive(false);
-		missions.SetActive(false);
-		flashSaleTimerText.transform.parent.gameObject.SetActive(false);
-		legionOfDoom.SetActive(true);
+		dayNight.SetActive(value: false);
+		mail.SetActive(value: false);
+		missions.SetActive(value: false);
+		if (flashSaleTimerText != null) flashSaleTimerText.transform.parent.gameObject.SetActive(value: false);
+		legionOfDoom.SetActive(value: true);
 		HidePopUps();
 		if (mailPopUpAnimator.IsNamed("communicator_emailpopup_intro", "communicator_emailpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		if (missionsPopUpAnimator.IsNamed("communicator_missionpopup_intro", "communicator_missionpopup_loop"))
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 	}
 
@@ -1704,14 +1539,14 @@ public class Communicator : MonoBehaviour
 		NewsFlashData newsFlashData = Player.instance.GetNewsFlashData(newsFlash.uid);
 		if (newsFlashData == null)
 		{
-			SaveDayAndTime(false);
+			SaveDayAndTime(save: false);
 			Player.instance.AddNewsFlash(newsFlash.uid);
 		}
 		else
 		{
 			if (!newsFlash.repeatable)
 			{
-				UnityEngine.Debug.LogErrorFormat("Attempted to Set News Flash, {0}, active but aborted. This news flash has already been set as the active news flash before and is NOT repeatable.", newsFlash.title);
+				Debug.LogErrorFormat("Attempted to Set News Flash, {0}, active but aborted. This news flash has already been set as the active news flash before and is NOT repeatable.", newsFlash.title);
 				return;
 			}
 			newsFlashData.dayActive = daysPassedInCity[newsFlash.cityName];
@@ -1719,17 +1554,17 @@ public class Communicator : MonoBehaviour
 		}
 		activeNewsFlash = newsFlash;
 		StartCoroutine(DelayBannerForNewsFlash(newsFlash, delayBanner));
-		if (NewsFlashStarted__BackingField != null)
+		if (NewsFlashStarted != null)
 		{
-			NewsFlashStarted__BackingField(newsFlash);
+			NewsFlashStarted(newsFlash);
 		}
 	}
 
 	private void EndBreakingNews()
 	{
-		if (NewsFlashEnded__BackingField != null)
+		if (NewsFlashEnded != null)
 		{
-			NewsFlashEnded__BackingField(activeNewsFlash);
+			NewsFlashEnded(activeNewsFlash);
 		}
 		currentDayPossibleNewsFlashes.Remove(activeNewsFlash);
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_newsflash_closeorend", GFAudioManager.SFX_GROUP, string.Empty);
@@ -1739,8 +1574,8 @@ public class Communicator : MonoBehaviour
 		}
 		if (dayNight.activeSelf)
 		{
-			antennaTail.gameObject.SetActive(false);
-			antennaLight.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
+			antennaLight.gameObject.SetActive(value: false);
 		}
 		Player.instance.CompleteNewsFlash(activeNewsFlash.uid);
 		prevActiveNewsFlash = activeNewsFlash;
@@ -1759,9 +1594,9 @@ public class Communicator : MonoBehaviour
 		newsFlashesShownToday.Add(newsFlash);
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_ringtone_newsflash", GFAudioManager.SFX_GROUP, string.Empty);
 		animator.Play("communicator_vibrate", 0, 0f);
-		antennaLight.gameObject.SetActive(true);
+		antennaLight.gameObject.SetActive(value: true);
 		antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_Blink");
-		antennaTail.gameObject.SetActive(false);
+		antennaTail.gameObject.SetActive(value: false);
 		antennaLight.SetSprite("gui_communicator_antenna_blue");
 		waitingForNewsFlash = true;
 		if (useDelay)
@@ -1799,7 +1634,7 @@ public class Communicator : MonoBehaviour
 			string arg = ((!(shopDef != null)) ? string.Empty : Language.Get(shopDef.nameKey, "MENUS,GUI"));
 			if (shopDef == null)
 			{
-				UnityEngine.Debug.LogError("News Flash " + newsFlash.title + ", uid: " + newsFlash.uid + ", has a NULL reference to a shop. Update Shop reference in Communicator Database.");
+				Debug.LogError("News Flash " + newsFlash.title + ", uid: " + newsFlash.uid + ", has a NULL reference to a shop. Update Shop reference in Communicator Database.");
 			}
 			if (!string.IsNullOrEmpty(newsFlash.messageKey))
 			{
@@ -1815,7 +1650,7 @@ public class Communicator : MonoBehaviour
 			newsTickerDescription.text = (string.IsNullOrEmpty(newsFlash.messageKey) ? newsFlash.message : Language.Get(newsFlash.messageKey, "MENUS,GUI"));
 		}
 		waitingForNewsFlash = false;
-		newsTicker.SetActive(true);
+		newsTicker.SetActive(value: true);
 		newsTickerAnimator.Play("Communicator_NewsTicker_Breakingnews");
 		if (newsTickerMarquee != null)
 		{
@@ -1842,7 +1677,7 @@ public class Communicator : MonoBehaviour
 		{
 			mailPopUpAnimator.Play("communicator_emailpopup_Outro");
 		}
-		lodCityMenu.Hide(false);
+		lodCityMenu.Hide(fireExitEvent: false);
 	}
 
 	public void CheckForPinnedMission()
@@ -1870,7 +1705,7 @@ public class Communicator : MonoBehaviour
 			if (num > 0)
 			{
 				missionsNumber.faceColor = Color.yellow;
-				antennaLight.gameObject.SetActive(true);
+				antennaLight.gameObject.SetActive(value: true);
 				antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_Blink");
 				antennaLight.SetSprite("gui_communicator_antenna_purple");
 				if (num > 1)
@@ -1909,22 +1744,22 @@ public class Communicator : MonoBehaviour
 	{
 		if (currentMail.Count > 0)
 		{
-			antennaLight.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
 			antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_Blink");
-			antennaTail.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
 			antennaLight.SetSprite("gui_communicator_antenna_green");
 		}
 		else
 		{
-			antennaLight.gameObject.SetActive(false);
-			antennaTail.gameObject.SetActive(false);
+			antennaLight.gameObject.SetActive(value: false);
+			antennaTail.gameObject.SetActive(value: false);
 		}
 	}
 
 	private void OnClickClock()
 	{
 		cityController.cityCharacter.StopMove();
-		newsTicker.SetActive(true);
+		newsTicker.SetActive(value: true);
 		if (activeNewsFlash == null && !waitingForNewsFlash)
 		{
 			newsTickerHeader.text = string.Empty;
@@ -1966,10 +1801,10 @@ public class Communicator : MonoBehaviour
 		yield return new WaitForEndOfFrame();
 		if (Player.instance.activeMissions.Count == 0)
 		{
-			missionTicker.SetActive(false);
+			missionTicker.SetActive(value: false);
 			yield break;
 		}
-		missionTicker.SetActive(true);
+		missionTicker.SetActive(value: true);
 		while (missionsPopUp.activeSelf && missionsPopUpAnimator.IsName("communicator_missionpopup_intro") && missionsPopUpAnimator.NormalizedTime() < 0.95f && missionTickerAnimator.IsName("Communicator_MissionTicker_Intro") && missionTickerAnimator.NormalizedTime() < 0.95f)
 		{
 			yield return new WaitForEndOfFrame();
@@ -1997,16 +1832,16 @@ public class Communicator : MonoBehaviour
 		missionTickerHeader.text = ((!string.IsNullOrEmpty(mission.titleKey)) ? Language.Get(mission.titleKey, "MISSIONS") : mission.title);
 		missionTickerAnimator.Play("Communicator_MissionTicker_Intro");
 		missionTickerPin.SetSprite("gui_communicator_missions_pin");
-		missionTickerDescText.gameObject.SetActive(false);
-		missionTickerVersus.SetActive(false);
-		missionTickerCollect1.SetActive(false);
-		missionTickerCollect2.SetActive(false);
-		missionTickerCollect3.SetActive(false);
-		missionTickerCollect4.SetActive(false);
-		missionTickerCollect5.SetActive(false);
+		missionTickerDescText.gameObject.SetActive(value: false);
+		missionTickerVersus.SetActive(value: false);
+		missionTickerCollect1.SetActive(value: false);
+		missionTickerCollect2.SetActive(value: false);
+		missionTickerCollect3.SetActive(value: false);
+		missionTickerCollect4.SetActive(value: false);
+		missionTickerCollect5.SetActive(value: false);
 		if (mission.descriptionOverrides)
 		{
-			missionTickerDescText.gameObject.SetActive(true);
+			missionTickerDescText.gameObject.SetActive(value: true);
 			if (mission.sideType == MissionSideType.Find || mission.sideType == MissionSideType.NPCScavengerHunt)
 			{
 				missionTickerDescText.text = ((!string.IsNullOrEmpty(mission.descriptionKey)) ? Language.Get(mission.descriptionKey, "MISSIONS") : mission.description).Replace("{0}", Mathf.Max(0, mission.amountNeeded - pinnedMission.currentAmount).ToString());
@@ -2018,8 +1853,8 @@ public class Communicator : MonoBehaviour
 		}
 		else if (mission.sideType == MissionSideType.Battle)
 		{
-			missionTickerVersus.SetActive(true);
-			missionTickerVersusIcon.gameObject.SetActive(true);
+			missionTickerVersus.SetActive(value: true);
+			missionTickerVersusIcon.gameObject.SetActive(value: true);
 			if (mission.iconSpriteCollection != null)
 			{
 				missionTickerVersusIcon.SetSprite(mission.iconSpriteCollection, mission.iconSpriteName);
@@ -2031,11 +1866,11 @@ public class Communicator : MonoBehaviour
 			missionTickerVersusIcon.transform.localScale = mission.iconScale;
 			missionTickerNumber.text = Mathf.Max(0, mission.amountNeeded - pinnedMission.currentAmount).ToString();
 			missionTickerType.text = Language.Get(mission.shortTypeNameKey, "MENUS,GUI");
-			missionTickerType2.gameObject.SetActive(false);
+			missionTickerType2.gameObject.SetActive(value: false);
 		}
 		else if (mission.sideType == MissionSideType.Investigate || mission.sideType == MissionSideType.TravelTo)
 		{
-			missionTickerVersusIcon.gameObject.SetActive(false);
+			missionTickerVersusIcon.gameObject.SetActive(value: false);
 		}
 		else if (mission.sideType == MissionSideType.Buy)
 		{
@@ -2071,8 +1906,8 @@ public class Communicator : MonoBehaviour
 			{
 				gameObject = missionTickerCollect5;
 			}
-			gameObject.SetActive(true);
-			MissionCollect[] componentsInChildren = gameObject.GetComponentsInChildren<MissionCollect>(true);
+			gameObject.SetActive(value: true);
+			MissionCollect[] componentsInChildren = gameObject.GetComponentsInChildren<MissionCollect>(includeInactive: true);
 			for (int j = 0; j < componentsInChildren.Length; j++)
 			{
 				MissionCollect missionCollect = componentsInChildren[j];
@@ -2108,7 +1943,7 @@ public class Communicator : MonoBehaviour
 				}
 				if (num4 >= count)
 				{
-					missionCollect.checkmark.SetActive(true);
+					missionCollect.checkmark.SetActive(value: true);
 					if (missionCollect.countText != null)
 					{
 						missionCollect.countText.text = string.Empty;
@@ -2116,7 +1951,7 @@ public class Communicator : MonoBehaviour
 				}
 				else
 				{
-					missionCollect.checkmark.SetActive(false);
+					missionCollect.checkmark.SetActive(value: false);
 					if (missionCollect.countText != null)
 					{
 						missionCollect.countText.text = (count - num4).ToString();
@@ -2153,15 +1988,15 @@ public class Communicator : MonoBehaviour
 			{
 				gameObject2 = missionTickerCollect5;
 			}
-			gameObject2.SetActive(true);
-			MissionCollect[] componentsInChildren2 = gameObject2.GetComponentsInChildren<MissionCollect>(true);
+			gameObject2.SetActive(value: true);
+			MissionCollect[] componentsInChildren2 = gameObject2.GetComponentsInChildren<MissionCollect>(includeInactive: true);
 			for (int k = 0; k < componentsInChildren2.Length; k++)
 			{
 				MissionCollect missionCollect2 = componentsInChildren2[k];
 				CharacterDefinition character2 = characterDatabase2.GetCharacter(mission.collectUIDS[k]);
 				missionCollect2.iconSprite.SetSprite(character2.portraitSprite);
 				missionCollect2.nameText.text = Language.Get(character2.characterNameKey, "NPCS,FIGS");
-				missionCollect2.checkmark.SetActive(false);
+				missionCollect2.checkmark.SetActive(value: false);
 				missionCollect2.nameText.transform.localPosition = new Vector3(missionCollect2.nameText.transform.localPosition.x, -22.4f, missionCollect2.nameText.transform.localPosition.z);
 				missionCollect2.nameText.rectTransform.sizeDelta = new Vector2(36f, 17f);
 				missionCollect2.nameText.enableWordWrapping = true;
@@ -2181,7 +2016,7 @@ public class Communicator : MonoBehaviour
 						{
 							flag = true;
 							list.Add(m);
-							missionCollect3.checkmark.SetActive(true);
+							missionCollect3.checkmark.SetActive(value: true);
 						}
 					}
 				}
@@ -2196,14 +2031,14 @@ public class Communicator : MonoBehaviour
 		{
 			return;
 		}
-		if (MissionScrollerWillAppear__BackingField != null)
+		if (MissionScrollerWillAppear != null)
 		{
-			MissionScrollerWillAppear__BackingField();
+			MissionScrollerWillAppear();
 		}
-		UpdateMissions(true, (cityName != CityName.Any) ? cityName : CityController.instance.cityName);
-		missionsPopUp.SetActive(true);
-		antennaLight.gameObject.SetActive(true);
-		antennaTail.gameObject.SetActive(true);
+		UpdateMissions(playMissionSideIntro: true, (cityName != CityName.Any) ? cityName : CityController.instance.cityName);
+		missionsPopUp.SetActive(value: true);
+		antennaLight.gameObject.SetActive(value: true);
+		antennaTail.gameObject.SetActive(value: true);
 		antennaLight.SetSprite("gui_communicator_antenna_purple");
 		antennaTail.SetSprite("gui_communicator_missions_tail");
 		missionsPopUpAnimator.Play("communicator_missionpopup_intro");
@@ -2245,14 +2080,14 @@ public class Communicator : MonoBehaviour
 		cityController.cityCharacter.StopMove();
 		if (!missionsPopUp.activeSelf || missionsPopUpAnimator.IsName("communicator_missionpopup_Outro"))
 		{
-			if (MissionScrollerWillAppear__BackingField != null)
+			if (MissionScrollerWillAppear != null)
 			{
-				MissionScrollerWillAppear__BackingField();
+				MissionScrollerWillAppear();
 			}
-			UpdateMissions(true, CityController.instance.cityName);
-			missionsPopUp.SetActive(true);
-			antennaLight.gameObject.SetActive(true);
-			antennaTail.gameObject.SetActive(true);
+			UpdateMissions(playMissionSideIntro: true, CityController.instance.cityName);
+			missionsPopUp.SetActive(value: true);
+			antennaLight.gameObject.SetActive(value: true);
+			antennaTail.gameObject.SetActive(value: true);
 			antennaLight.SetSprite("gui_communicator_antenna_purple");
 			antennaTail.SetSprite("gui_communicator_missions_tail");
 			missionsPopUpAnimator.Play("communicator_missionpopup_intro");
@@ -2292,15 +2127,15 @@ public class Communicator : MonoBehaviour
 		if (currentMail.Count > 0)
 		{
 			animator.Play("communicator_vibrate");
-			antennaLight.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
 			antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_Blink");
-			antennaTail.gameObject.SetActive(false);
+			antennaTail.gameObject.SetActive(value: false);
 			antennaLight.SetSprite("gui_communicator_antenna_green");
 		}
 		else
 		{
-			antennaLight.gameObject.SetActive(false);
-			antennaTail.gameObject.SetActive(false);
+			antennaLight.gameObject.SetActive(value: false);
+			antennaTail.gameObject.SetActive(value: false);
 		}
 		missionsPopUpAnimator.Play("communicator_missionpopup_Outro");
 	}
@@ -2310,7 +2145,7 @@ public class Communicator : MonoBehaviour
 		cityController.cityCharacter.StopMove();
 		if (!mailPopUp.activeSelf || mailPopUpAnimator.IsName("communicator_emailpopup_Outro"))
 		{
-			mailPopUp.SetActive(true);
+			mailPopUp.SetActive(value: true);
 			if (currentMail.Count > 0)
 			{
 				Player.instance.ViewMail(currentMail[0]);
@@ -2327,8 +2162,8 @@ public class Communicator : MonoBehaviour
 				mailPopUpDescr.text = Language.Get("NOEMAILS", "MENUS,GUI");
 				mailPopUpSignature.text = string.Empty;
 			}
-			antennaLight.gameObject.SetActive(true);
-			antennaTail.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
+			antennaTail.gameObject.SetActive(value: true);
 			antennaLight.SetSprite("gui_communicator_antenna_green");
 			antennaTail.SetSprite("gui_communicator_mail_tail");
 			mailPopUpAnimator.Play("communicator_emailpopup_intro");
@@ -2386,8 +2221,8 @@ public class Communicator : MonoBehaviour
 	private void OnClickCloseMail()
 	{
 		mailPopUpAnimator.Play("communicator_emailpopup_Outro");
-		antennaLight.gameObject.SetActive(false);
-		antennaTail.gameObject.SetActive(false);
+		antennaLight.gameObject.SetActive(value: false);
+		antennaTail.gameObject.SetActive(value: false);
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_windowclose", GFAudioManager.SFX_GROUP, string.Empty);
 		cityController.pinchZoomer.allowPan = true;
 		if (addedMailMission)
@@ -2534,11 +2369,11 @@ public class Communicator : MonoBehaviour
 		cityController.cityCharacter.StopMove();
 		if (!lodCityMenu.gameObject.activeSelf || lodCityMenu.mainMenuAnimator.IsName("communicator_emailpopup_Outro"))
 		{
-			lodCityMenu.gameObject.SetActive(true);
+			lodCityMenu.gameObject.SetActive(value: true);
 			lodCityMenu.Init();
-			antennaTail.gameObject.SetActive(true);
+			antennaTail.gameObject.SetActive(value: true);
 			antennaTail.SetSprite("gui_communicator_red_tail");
-			antennaLight.gameObject.SetActive(true);
+			antennaLight.gameObject.SetActive(value: true);
 			antennaLight.SetSprite("gui_communicator_antenna_red");
 			antennaLight.gameObject.GetComponent<Animator>().Play("Communicator_Antenna_Light_On");
 			GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_windowopen", GFAudioManager.SFX_GROUP, string.Empty);
@@ -2546,7 +2381,7 @@ public class Communicator : MonoBehaviour
 		}
 		else
 		{
-			lodCityMenu.Hide(true);
+			lodCityMenu.Hide(fireExitEvent: true);
 		}
 	}
 
@@ -2560,8 +2395,8 @@ public class Communicator : MonoBehaviour
 	{
 		if (lodCityMenu.gameObject.activeInHierarchy)
 		{
-			antennaLight.gameObject.SetActive(false);
-			antennaTail.gameObject.SetActive(false);
+			antennaLight.gameObject.SetActive(value: false);
+			antennaTail.gameObject.SetActive(value: false);
 			GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_communicator_windowclose", GFAudioManager.SFX_GROUP, string.Empty);
 			cityController.pinchZoomer.allowPan = true;
 		}
@@ -2569,16 +2404,18 @@ public class Communicator : MonoBehaviour
 
 	private void HandlePvpRequestsUpdated()
 	{
+		if (Player.instance == null) return;
+		if (inviteCountTextMesh == null || multiplayerTextMesh == null) return;
 		int pendingRequestCount = Player.instance.pvpData.PendingRequestCount;
 		if (pendingRequestCount > 0)
 		{
-			inviteCountTextMesh.gameObject.SetActive(true);
+			inviteCountTextMesh.gameObject.SetActive(value: true);
 			inviteCountTextMesh.text = pendingRequestCount.ToString();
 			multiplayerTextMesh.text = ((pendingRequestCount <= 1) ? Language.Get("INVITE", "MENUS,GUI") : Language.Get("INVITES", "MENUS,GUI"));
 		}
 		else
 		{
-			inviteCountTextMesh.gameObject.SetActive(false);
+			inviteCountTextMesh.gameObject.SetActive(value: false);
 			multiplayerTextMesh.text = Language.Get("MULTIPLAYER", "MENUS,GUI");
 		}
 	}

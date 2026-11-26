@@ -17,13 +17,7 @@ public class DailyMissionManager : MonoBehaviour
 
 	private static DailyMissionManager _instance;
 
-	public DailyMissionData currentDailyMission
-	{
-		get
-		{
-			return Player.instance.currentDailyMission;
-		}
-	}
+	public DailyMissionData currentDailyMission => Player.instance.currentDailyMission;
 
 	public static bool debugMissions { get; set; }
 
@@ -43,7 +37,7 @@ public class DailyMissionManager : MonoBehaviour
 
 	private void Awake()
 	{
-		UnityEngine.Object.DontDestroyOnLoad(base.gameObject);
+		UnityEngine.Object.DontDestroyOnLoad(gameObject);
 		EventMessenger.Instance.AddListener<LanguageChangedEvent>(HandleLanguageChangedEvent);
 	}
 
@@ -71,7 +65,8 @@ public class DailyMissionManager : MonoBehaviour
 		if (!isInitialized)
 		{
 			config = Resources.Load<DailyMissionConfig>("DailyMissionConfig");
-			isInitialized = true;
+		isInitialized = true;
+		if (config == null) { Debug.LogWarning("DailyMissionConfig missing"); return; }
 			if (Player.instance.currentDailyMission == null)
 			{
 				GenerateMission();
@@ -140,10 +135,11 @@ public class DailyMissionManager : MonoBehaviour
 			dailyMissionData2.type = array[UnityEngine.Random.Range(0, array.Length)];
 		}
 		while (dailyMissionData2.type == DailyMissionType.ScavengerHunt);
-		DailyMissionSetup randomSetupByType = config.GetRandomSetupByType(dailyMissionData2.type);
+		DailyMissionSetup randomSetupByType = (config == null) ? null : config.GetRandomSetupByType(dailyMissionData2.type);
 		if (randomSetupByType == null)
 		{
-			Debug.LogError(string.Concat("[DailyMissionManager] - There are no daily mission setups for the mission type of ", dailyMissionData2.type, ". Please remedy this."));
+			Debug.LogError(string.Concat("[DailyMissionManager] - no setups for ", dailyMissionData2.type));
+			return;
 		}
 		dailyMissionData2.difficulty = randomSetupByType.difficultyLevel;
 		NPCDefinition nPCDefinition = null;
@@ -321,3 +317,5 @@ public class DailyMissionManager : MonoBehaviour
 		}
 	}
 }
+
+

@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using DG.Tweening;
 using Photon.Pun;
 using TMPro;
@@ -24,18 +22,6 @@ public class CityController : MonoBehaviour
 	public static string startFromNodeNamed = string.Empty;
 
 	public static bool startFacingRight;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action<CityLocation> OnCityLocationChanged__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action<LandmarkIcon, bool, bool> OnLandmarkWayPointClicked__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action OnExitCityScene__BackingField;
-
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action FinishedDialogue__BackingField;
 
 	public CityName cityName;
 
@@ -209,13 +195,7 @@ public class CityController : MonoBehaviour
 		}
 	}
 
-	public CityLocation currentLocation
-	{
-		get
-		{
-			return _currentLocation;
-		}
-	}
+	public CityLocation currentLocation => _currentLocation;
 
 	public CityLocationBounds CurrentCityLocationBounds
 	{
@@ -245,13 +225,7 @@ public class CityController : MonoBehaviour
 		}
 	}
 
-	public static CityController instance
-	{
-		get
-		{
-			return _instance;
-		}
-	}
+	public static CityController instance => _instance;
 
 	public static string previousCityScene
 	{
@@ -269,109 +243,13 @@ public class CityController : MonoBehaviour
 		}
 	}
 
-	public event Action<CityLocation> OnCityLocationChanged
-	{
-		add
-		{
-			Action<CityLocation> action = OnCityLocationChanged__BackingField;
-			Action<CityLocation> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnCityLocationChanged__BackingField, (Action<CityLocation>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<CityLocation> action = OnCityLocationChanged__BackingField;
-			Action<CityLocation> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnCityLocationChanged__BackingField, (Action<CityLocation>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action<CityLocation> OnCityLocationChanged;
 
-	public event Action<LandmarkIcon, bool, bool> OnLandmarkWayPointClicked
-	{
-		add
-		{
-			Action<LandmarkIcon, bool, bool> action = OnLandmarkWayPointClicked__BackingField;
-			Action<LandmarkIcon, bool, bool> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnLandmarkWayPointClicked__BackingField, (Action<LandmarkIcon, bool, bool>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<LandmarkIcon, bool, bool> action = OnLandmarkWayPointClicked__BackingField;
-			Action<LandmarkIcon, bool, bool> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnLandmarkWayPointClicked__BackingField, (Action<LandmarkIcon, bool, bool>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action<LandmarkIcon, bool, bool> OnLandmarkWayPointClicked;
 
-	public event Action OnExitCityScene
-	{
-		add
-		{
-			Action action = OnExitCityScene__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnExitCityScene__BackingField, (Action)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action action = OnExitCityScene__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref OnExitCityScene__BackingField, (Action)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action OnExitCityScene;
 
-	public event Action FinishedDialogue
-	{
-		add
-		{
-			Action action = FinishedDialogue__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref FinishedDialogue__BackingField, (Action)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action action = FinishedDialogue__BackingField;
-			Action action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref FinishedDialogue__BackingField, (Action)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action FinishedDialogue;
 
 	private void Awake()
 	{
@@ -379,27 +257,24 @@ public class CityController : MonoBehaviour
 		bool flag = previousCityScene == "City_JumpCityNew" || previousCityScene == "City_Gotham" || previousCityScene == "City_Metropolis";
 		previousCityScene = SceneManagerHelper.ActiveSceneName;
 		Application.targetFrameRate = 60;
-		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Default"), LayerMask.NameToLayer("Default"), false);
-		PauseManager.instance.isEnabled = true;
-		PauseManager.instance.Resume();
-		cityTheme.Stop();
-		cityTheme2.Stop();
-		cityTheme2.gameObject.SetActive(false);
+		Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Default"), LayerMask.NameToLayer("Default"), ignore: false);
+		if (PauseManager.instance != null) { PauseManager.instance.isEnabled = true; PauseManager.instance.Resume(); }
+		if (cityTheme != null) cityTheme.Stop();
+		if (cityTheme2 != null) { cityTheme2.Stop(); cityTheme2.gameObject.SetActive(value: false); }
 		cameFromOtherCity = false;
 		if (!string.IsNullOrEmpty(startFromNodeNamed))
 		{
 			GameObject gameObject = GameObject.Find(startFromNodeNamed);
 			if (gameObject != null)
 			{
-				cityCharacter.transform.position = gameObject.transform.position;
-				cameraHolder.position = cityCharacter.transform.position;
+				if (cityCharacter != null) cityCharacter.transform.position = gameObject.transform.position;
+				if (cameraHolder != null && cityCharacter != null) cameraHolder.position = cityCharacter.transform.position;
 				cameFromOtherCity = flag;
 			}
 			else
 			{
-				cityCharacter.transform.position = cityStartPathNode.transform.position;
-				cityCharacter.UpdateCurrentNode(cityStartPathNode);
-				cameraHolder.position = cityCharacter.transform.position;
+				if (cityCharacter != null && cityStartPathNode != null) { cityCharacter.transform.position = cityStartPathNode.transform.position; cityCharacter.UpdateCurrentNode(cityStartPathNode); }
+				if (cameraHolder != null && cityCharacter != null) cameraHolder.position = cityCharacter.transform.position;
 				startFacingRight = cityStartFacingRight;
 				cameFromOtherCity = flag;
 			}
@@ -407,20 +282,19 @@ public class CityController : MonoBehaviour
 		}
 		else if (!string.IsNullOrEmpty(SaveUtility.GetString("PlayerPosition")))
 		{
-			cityCharacter.transform.position = Vector3FromString(SaveUtility.GetString("PlayerPosition"));
-			cameraHolder.position = cityCharacter.transform.position;
+			if (cityCharacter != null) cityCharacter.transform.position = Vector3FromString(SaveUtility.GetString("PlayerPosition"));
+			if (cameraHolder != null && cityCharacter != null) cameraHolder.position = cityCharacter.transform.position;
 		}
 		else
 		{
-			cityCharacter.transform.position = cityStartPathNode.transform.position;
-			cityCharacter.UpdateCurrentNode(cityStartPathNode);
+			if (cityCharacter != null && cityStartPathNode != null) { cityCharacter.transform.position = cityStartPathNode.transform.position; cityCharacter.UpdateCurrentNode(cityStartPathNode); }
 			startFacingRight = cityStartFacingRight;
 		}
-		curCameraAngleIndex = Mathf.Clamp(initialAngleIndex, 0, cameraAngles.Count - 1);
-		UpdateCameraAngle(true);
+		if (cameraAngles != null && cameraAngles.Count > 0) curCameraAngleIndex = Mathf.Clamp(initialAngleIndex, 0, cameraAngles.Count - 1);
+		try { UpdateCameraAngle(instant: true); } catch (System.Exception e) { Debug.LogWarning(e); }
 		if (mySquad != null)
 		{
-			mySquad.Init(Player.instance, true);
+			mySquad.Init(Player.instance, isCity: true);
 			mySquad.HideNow();
 		}
 		if (rainbowWalletGUI != null)
@@ -464,12 +338,12 @@ public class CityController : MonoBehaviour
 			}
 			else
 			{
-				UnityEngine.Debug.LogError("charactersReference is NULL! Which means characterDatabase.characters is NULL! Report this error!");
+				Debug.LogError("charactersReference is NULL! Which means characterDatabase.characters is NULL! Report this error!");
 			}
 		}
 		else
 		{
-			UnityEngine.Debug.LogError("Game Manager Character Database is NULL! Report this error!");
+			Debug.LogError("Game Manager Character Database is NULL! Report this error!");
 		}
 	}
 
@@ -532,12 +406,12 @@ public class CityController : MonoBehaviour
 			communicator.StartDayTime -= HandleTimeChange;
 			communicator.StartNightTime -= HandleTimeChange;
 		}
-		OnCityLocationChanged__BackingField = null;
-		OnLandmarkWayPointClicked__BackingField = null;
-		OnExitCityScene__BackingField = null;
+		OnCityLocationChanged = null;
+		OnLandmarkWayPointClicked = null;
+		OnExitCityScene = null;
 		if (CityModel.instance != null)
 		{
-			CityModel.instance.gameObject.SetActive(false);
+			CityModel.instance.gameObject.SetActive(value: false);
 		}
 		_instance = null;
 	}
@@ -658,8 +532,8 @@ public class CityController : MonoBehaviour
 		prevCameraAngleIndex = curCameraAngleIndex;
 		usePrevPosition = true;
 		communicator.SaveDayAndTime();
-		SaveUtility.SetString("PlayerPosition", prevPosition.ToString(), false);
-		SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+		SaveUtility.SetString("PlayerPosition", prevPosition.ToString(), save: false);
+		SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 		ShopController.inventory = ((!(evt.shopInventory != null)) ? evt.shopDef.defaultInventory : evt.shopInventory);
 		int num = -1;
 		if (evt.shopDef.additionalInventories.Count > 0)
@@ -691,8 +565,8 @@ public class CityController : MonoBehaviour
 		if (!exitingCityScene)
 		{
 			cityCharacter.StopMove();
-			SaveUtility.SetString("PlayerPosition", cityCharacter.transform.position.ToString(), false);
-			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+			SaveUtility.SetString("PlayerPosition", cityCharacter.transform.position.ToString(), save: false);
+			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 			communicator.SaveDayAndTime();
 			communicator.ResolveActiveNewsFlash();
 			Player.instance.IncreaseCurrentTime(20);
@@ -710,8 +584,8 @@ public class CityController : MonoBehaviour
 	{
 		if (!exitingCityScene && !(evt.tournament == null))
 		{
-			SaveUtility.SetString("PlayerPosition", cityCharacter.transform.position.ToString(), false);
-			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+			SaveUtility.SetString("PlayerPosition", cityCharacter.transform.position.ToString(), save: false);
+			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 			communicator.SaveDayAndTime();
 			communicator.ResolveActiveNewsFlash();
 			Player.instance.IncreaseCurrentTime(20);
@@ -779,6 +653,7 @@ public class CityController : MonoBehaviour
 
 	private IEnumerator Start()
 	{
+		if (cityCharacter == null) yield break;
 		if (Time.frameCount == 1 && Player.instance.pvpData.hasConnected)
 		{
 			TT2NetChat.Instance.Connect(Player.instance.pvpData.playerID);
@@ -787,27 +662,28 @@ public class CityController : MonoBehaviour
 		{
 			yield return null;
 		}
+		if (cityCharacter == null) yield break;
 		yield return new WaitUntil(() => cityCharacter.animator != null);
 		if (SceneManager.GetActiveScene().name == "City_JumpCityNew")
 		{
-			if (!cityCharacter.CanReachNode(cityStartPathNode, false) && cityCharacter.CanReachNode(cityStartPathNode, true))
+			if (cityCharacter != null && cityStartPathNode != null && !cityCharacter.CanReachNode(cityStartPathNode, allowInactiveNodes: false) && cityCharacter.CanReachNode(cityStartPathNode, allowInactiveNodes: true))
 			{
-				UnityEngine.Debug.Log("Character is stuck, resetting position...");
+				Debug.Log("Character is stuck, resetting position...");
 				cityCharacter.transform.position = cityStartPathNode.transform.position;
 				cityCharacter.UpdateCurrentNode(cityStartPathNode);
 				startFacingRight = cityStartFacingRight;
 			}
 			else
 			{
-				UnityEngine.Debug.Log("Character is NOT stuck");
+				Debug.Log("Character is NOT stuck");
 			}
 		}
-		cityCharacter.animator.isFlipped = startFacingRight;
+		if (cityCharacter != null && cityCharacter.animator != null) cityCharacter.animator.isFlipped = startFacingRight;
 		startFacingRight = false;
 		Input.multiTouchEnabled = true;
 		if (CityModel.instance != null)
 		{
-			CityModel.instance.gameObject.SetActive(true);
+			CityModel.instance.gameObject.SetActive(value: true);
 		}
 		UpdateCityLocation();
 		if (cameFromOtherCity)
@@ -844,7 +720,7 @@ public class CityController : MonoBehaviour
 		if (wayPointIcon != null)
 		{
 			wayPointIcon.IsManualWayPoint = true;
-			wayPointIcon.gameObject.SetActive(false);
+			wayPointIcon.gameObject.SetActive(value: false);
 		}
 		if (fromChallengeScene)
 		{
@@ -854,7 +730,7 @@ public class CityController : MonoBehaviour
 		yield return new WaitWhile(() => TitleScreenController.instance != null && TitleScreenController.instance.titleScreenActive);
 		if (SaveUtility.GetInt("PLAYED_TT2_INTRO") == 0)
 		{
-			UnityEngine.Debug.Log("\t Start Coroutine for TT2 INTRO");
+			Debug.Log("\t Start Coroutine for TT2 INTRO");
 			StartCoroutine(PlayTT2Dialogue("CONVO_TUTORIAL_GAMESTART"));
 			SaveUtility.SetInt("PLAYED_TT2_INTRO", 1);
 		}
@@ -883,7 +759,7 @@ public class CityController : MonoBehaviour
 	{
 		if (TitleScreenController.instance == null || !TitleScreenController.instance.titleScreenActive)
 		{
-			PlayCurrentLocationMusic(true);
+			PlayCurrentLocationMusic(crossFade: true);
 		}
 	}
 
@@ -902,9 +778,9 @@ public class CityController : MonoBehaviour
 
 	public void LandmarkWayPointClicked(LandmarkIcon icon, bool unselectSelected = true, bool manualWayPointClick = false)
 	{
-		if (OnLandmarkWayPointClicked__BackingField != null && icon != null)
+		if (OnLandmarkWayPointClicked != null && icon != null)
 		{
-			OnLandmarkWayPointClicked__BackingField(icon, unselectSelected, manualWayPointClick);
+			OnLandmarkWayPointClicked(icon, unselectSelected, manualWayPointClick);
 		}
 		if (icon != null && icon.landmark != null)
 		{
@@ -920,7 +796,7 @@ public class CityController : MonoBehaviour
 			UpdateCityLocation();
 			if (dialogueWalletGUI != null && (DialogueTree.instance == null || (DialogueTree.instance != null && !DialogueTree.instance.gameObject.activeInHierarchy)))
 			{
-				dialogueWalletGUI.gameObject.SetActive(false);
+				dialogueWalletGUI.gameObject.SetActive(value: false);
 			}
 		}
 	}
@@ -937,9 +813,9 @@ public class CityController : MonoBehaviour
 			if (cityLocationBounds.cityLocaton != CityLocation.None && cityLocationBounds.cityLocaton != _currentLocation && cityLocationBounds.bounds.Contains(cityCharacter.transform.position))
 			{
 				_currentLocation = cityLocationBounds.cityLocaton;
-				if (OnCityLocationChanged__BackingField != null)
+				if (OnCityLocationChanged != null)
 				{
-					OnCityLocationChanged__BackingField(_currentLocation);
+					OnCityLocationChanged(_currentLocation);
 				}
 			}
 		}
@@ -1002,8 +878,8 @@ public class CityController : MonoBehaviour
 				AudioSource audioSource = ((!cityTheme.gameObject.activeInHierarchy) ? cityTheme2 : cityTheme);
 				AudioSource audioSource2 = ((!cityTheme.gameObject.activeInHierarchy) ? cityTheme : cityTheme2);
 				audioSource.Stop();
-				audioSource.gameObject.SetActive(false);
-				audioSource2.gameObject.SetActive(true);
+				audioSource.gameObject.SetActive(value: false);
+				audioSource2.gameObject.SetActive(value: true);
 				audioSource2.clip = clip;
 				audioSource2.volume = targetCityThemeVolume;
 				audioSource2.Play();
@@ -1030,7 +906,7 @@ public class CityController : MonoBehaviour
 		{
 			curSource.Play();
 		}
-		targetSource.gameObject.SetActive(true);
+		targetSource.gameObject.SetActive(value: true);
 		targetSource.clip = newClip;
 		targetSource.volume = 0f;
 		targetSource.Play();
@@ -1043,7 +919,7 @@ public class CityController : MonoBehaviour
 			targetSource.volume = Mathf.Lerp(0f, targetCityThemeVolume, t);
 			yield return null;
 		}
-		curSource.gameObject.SetActive(false);
+		curSource.gameObject.SetActive(value: false);
 	}
 
 	public void StopMusic()
@@ -1071,7 +947,7 @@ public class CityController : MonoBehaviour
 		{
 			communicator.SaveDayAndTime();
 			Time.timeScale = 0f;
-			pauseScreen.gameObject.SetActive(true);
+			pauseScreen.gameObject.SetActive(value: true);
 			targetCityThemeVolume = 0.25f;
 			cityTheme.volume = targetCityThemeVolume;
 			cityTheme2.volume = targetCityThemeVolume;
@@ -1116,10 +992,10 @@ public class CityController : MonoBehaviour
 			yield return null;
 		}
 		cityCharacter.SetPosition((!insideJail) ? jailOutsideStartPosition.GetComponent<PathNode>() : jailInsideStartPosition.GetComponent<PathNode>());
-		SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), false);
-		SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+		SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), save: false);
+		SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 		yield return new WaitForSeconds(2f);
-		PlayCurrentLocationMusic(true);
+		PlayCurrentLocationMusic(crossFade: true);
 		animator.Play("outro");
 		yield return new WaitForEndOfFrame();
 		while (animator.GetCurrentAnimatorStateInfo(0).IsName("outro") && animator.NormalizedTime() < 0.9f)
@@ -1155,7 +1031,7 @@ public class CityController : MonoBehaviour
 		cityCharacter.StopMove();
 		cityCharacter.SetPosition(cityBeachDockPosition.GetComponent<PathNode>());
 		yield return new WaitForSeconds(2f);
-		PlayCurrentLocationMusic(true);
+		PlayCurrentLocationMusic(crossFade: true);
 		animator.Play("outro");
 		yield return new WaitForEndOfFrame();
 		while (animator.GetCurrentAnimatorStateInfo(0).IsName("outro") && animator.NormalizedTime() < 0.9f)
@@ -1178,7 +1054,7 @@ public class CityController : MonoBehaviour
 		GameUI.instance.ShowCinemaBars(0.8f);
 		yield return new WaitForSeconds(0.9f);
 		hoodedHoodAudioClip = Resources.Load("Audio/Music/music_hoodedhood_loop") as AudioClip;
-		PlayMusic(hoodedHoodAudioClip, true);
+		PlayMusic(hoodedHoodAudioClip, crossFade: true);
 		hoodedHoodCity = new GameObject("Hooded Hood");
 		hoodedHoodCity.transform.position = hoodedHoodEncounters.GetHoodPositionForName(convoName);
 		CityNPC cityNPC = hoodedHoodCity.AddComponent<CityNPC>();
@@ -1211,7 +1087,7 @@ public class CityController : MonoBehaviour
 
 	private IEnumerator StartEndHoodedHoodAudioRoutine()
 	{
-		PlayCurrentLocationMusic(true);
+		PlayCurrentLocationMusic(crossFade: true);
 		yield return new WaitForSeconds(2f);
 		if (hoodedHoodAudioClip != null)
 		{
@@ -1244,8 +1120,8 @@ public class CityController : MonoBehaviour
 			prevPosition = cityCharacter.transform.position;
 			prevCameraAngleIndex = curCameraAngleIndex;
 			usePrevPosition = true;
-			SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), false);
-			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+			SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), save: false);
+			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 			if (communicator != null)
 			{
 				communicator.SaveDayAndTime();
@@ -1364,20 +1240,20 @@ public class CityController : MonoBehaviour
 		swipeManager.enabled = false;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(false);
+			pauseButton.gameObject.SetActive(value: false);
 		}
-		GUICamera.instance.gameObject.SetActive(false);
+		GUICamera.instance.gameObject.SetActive(value: false);
 		if (Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(false);
+			Communicator.instance.SetCommunicatorShown(show: false);
 		}
 		pinchZoomer.allowPinchZoom = false;
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_dialogue_charcloseupsintro", GFAudioManager.SFX_GROUP, string.Empty);
-		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default(Vector3), false);
+		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default, isActive: false);
 		dialogueSystem.transform.parent = dialogueSystemParent;
 		dialogueSystem.transform.localPosition = new Vector3(0f, 0f, -400f);
 		dialogueSystem.BeginBattle += HandleBeginBattle;
-		dialogueSystem.gameObject.SetActive(true);
+		dialogueSystem.gameObject.SetActive(value: true);
 		if (overrideConvo != null && overrideConvo.triggersImmediately)
 		{
 			dialogueSystem.Init(guiCamera2, overrideConvo, npcEntity, npcState, showExitButton);
@@ -1402,11 +1278,11 @@ public class CityController : MonoBehaviour
 		yield return new WaitForEndOfFrame();
 		if (!preventShowingCommunicatorAfterDialogue && Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(true);
+			Communicator.instance.SetCommunicatorShown(show: true);
 		}
 		if (!preventShowingGUIAfterDialogue && (CityReward.instance == null || !CityReward.instance.showingRewards) && !startingBattle)
 		{
-			GUICamera.instance.gameObject.SetActive(true);
+			GUICamera.instance.gameObject.SetActive(value: true);
 		}
 		pinchZoomer.allowPinchZoom = true;
 		preventShowingCommunicatorAfterDialogue = false;
@@ -1414,7 +1290,7 @@ public class CityController : MonoBehaviour
 		swipeManager.enabled = true;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(true);
+			pauseButton.gameObject.SetActive(value: true);
 		}
 	}
 
@@ -1430,19 +1306,19 @@ public class CityController : MonoBehaviour
 		pinchZoomer.allowPinchZoom = false;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(false);
+			pauseButton.gameObject.SetActive(value: false);
 		}
-		GUICamera.instance.gameObject.SetActive(false);
+		GUICamera.instance.gameObject.SetActive(value: false);
 		if (Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(false);
+			Communicator.instance.SetCommunicatorShown(show: false);
 		}
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_dialogue_charcloseupsintro", GFAudioManager.SFX_GROUP, string.Empty);
-		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default(Vector3), false);
+		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default, isActive: false);
 		dialogueSystem.transform.parent = dialogueSystemParent;
 		dialogueSystem.transform.localPosition = new Vector3(0f, 0f, -400f);
-		dialogueSystem.gameObject.SetActive(true);
-		dialogueSystem.Init(guiCamera2, convo, npcEntity, npcState, false);
+		dialogueSystem.gameObject.SetActive(value: true);
+		dialogueSystem.Init(guiCamera2, convo, npcEntity, npcState, showExitButton: false);
 		while (dialogueSystem != null && dialogueSystem.gameObject.activeSelf)
 		{
 			yield return null;
@@ -1452,11 +1328,11 @@ public class CityController : MonoBehaviour
 		yield return new WaitForEndOfFrame();
 		if (!preventShowingCommunicatorAfterDialogue && Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(true);
+			Communicator.instance.SetCommunicatorShown(show: true);
 		}
 		if (!preventShowingGUIAfterDialogue && (CityReward.instance == null || !CityReward.instance.showingRewards) && !startingBattle)
 		{
-			GUICamera.instance.gameObject.SetActive(true);
+			GUICamera.instance.gameObject.SetActive(value: true);
 		}
 		pinchZoomer.allowPinchZoom = true;
 		preventShowingCommunicatorAfterDialogue = false;
@@ -1464,7 +1340,7 @@ public class CityController : MonoBehaviour
 		swipeManager.enabled = true;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(true);
+			pauseButton.gameObject.SetActive(value: true);
 		}
 	}
 
@@ -1475,7 +1351,7 @@ public class CityController : MonoBehaviour
 			return;
 		}
 		startingBattle = true;
-		SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), false);
+		SaveUtility.SetString("PlayerPosition", cityCharacter.gameObject.transform.position.ToString(), save: false);
 		prevPosition = cityCharacter.transform.position;
 		prevCameraAngleIndex = curCameraAngleIndex;
 		usePrevPosition = true;
@@ -1530,12 +1406,12 @@ public class CityController : MonoBehaviour
 		List<TournamentRoundFigureData> list = new List<TournamentRoundFigureData>();
 		if (battleMission != null && battleMission.useFigureOverrides)
 		{
-			UnityEngine.Debug.Log("Player has Battle mission with figure overrides");
+			Debug.Log("Player has Battle mission with figure overrides");
 			list.AddRange(battleMission.figureOverrides);
 		}
 		else if (dailyBattleMission != null && dailyBattleMission.useFigureOverrides)
 		{
-			UnityEngine.Debug.Log("Player has Daily Battle mission with figure overrides");
+			Debug.Log("Player has Daily Battle mission with figure overrides");
 			list.AddRange(dailyBattleMission.figureOverrides);
 		}
 		else if (npcState != null)
@@ -1588,7 +1464,7 @@ public class CityController : MonoBehaviour
 
 	private IEnumerator BeginPreBattle()
 	{
-		UnityEngine.Debug.Log("BeginPreBattle");
+		Debug.Log("BeginPreBattle");
 		yield return new WaitForSeconds(0.16f);
 		if (communicator != null)
 		{
@@ -1613,7 +1489,7 @@ public class CityController : MonoBehaviour
 			communicator.ResolveActiveNewsFlash();
 		}
 		ExitCityScene();
-		LoadingScreenCover.LoadScene("PreBattle", false);
+		LoadingScreenCover.LoadScene("PreBattle", showLoadingScreen: false);
 	}
 
 	public void HandleShowDialogue(Conversation conversation, bool showExitButton = true, CityEntityNPC npcEntity = null, CityEntityStateNPC npcState = null, bool trackCompletion = false, float delay = 0f)
@@ -1623,7 +1499,7 @@ public class CityController : MonoBehaviour
 
 	public IEnumerator PlayConvo(Conversation convo)
 	{
-		yield return StartCoroutine(ShowDialogue(convo, false));
+		yield return StartCoroutine(ShowDialogue(convo, showExitButton: false));
 	}
 
 	public IEnumerator PlayDialogue(string convoName)
@@ -1631,7 +1507,7 @@ public class CityController : MonoBehaviour
 		Conversation convo = Resources.Load("Data/Conversations/" + convoName) as Conversation;
 		if (convo != null)
 		{
-			yield return StartCoroutine(ShowDialogue(convo, false));
+			yield return StartCoroutine(ShowDialogue(convo, showExitButton: false));
 		}
 	}
 
@@ -1640,7 +1516,7 @@ public class CityController : MonoBehaviour
 		Conversation convo = Resources.Load("Data/TT2/" + convoName) as Conversation;
 		if (convo != null)
 		{
-			yield return StartCoroutine(ShowDialogue(convo, false));
+			yield return StartCoroutine(ShowDialogue(convo, showExitButton: false));
 		}
 	}
 
@@ -1648,7 +1524,7 @@ public class CityController : MonoBehaviour
 	{
 		if (conversation == null)
 		{
-			UnityEngine.Debug.LogError("Convo is null");
+			Debug.LogError("Convo is null");
 			yield break;
 		}
 		if (delay > 0f)
@@ -1669,20 +1545,20 @@ public class CityController : MonoBehaviour
 		swipeManager.enabled = false;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(false);
+			pauseButton.gameObject.SetActive(value: false);
 		}
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_dialogue_charcloseupsintro", GFAudioManager.SFX_GROUP, string.Empty);
-		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default(Vector3), false);
+		DialogueTree dialogueSystem = ObjectPool.GetObjectFromResource<DialogueTree>("Prefabs/GUI/DialogueSystem", default, isActive: false);
 		dialogueSystem.transform.parent = dialogueSystemParent;
 		dialogueSystem.transform.localPosition = new Vector3(0f, 0f, -400f);
-		dialogueSystem.gameObject.SetActive(true);
+		dialogueSystem.gameObject.SetActive(value: true);
 		dialogueSystem.Init(guiCamera2, conversation, npcEntity, npcState, showExitButton);
 		dialogueSystem.BeginBattle += HandleBeginBattle;
 		dialogueSystem.backing.gameObject.SetActive(showBacking);
-		GUICamera.instance.gameObject.SetActive(false);
+		GUICamera.instance.gameObject.SetActive(value: false);
 		if (Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(false);
+			Communicator.instance.SetCommunicatorShown(show: false);
 		}
 		pinchZoomer.allowPinchZoom = false;
 		while (dialogueSystem != null && dialogueSystem.gameObject.activeSelf)
@@ -1692,20 +1568,20 @@ public class CityController : MonoBehaviour
 		dialogueSystem.BeginBattle -= HandleBeginBattle;
 		if (trackCompletion && conversation != null)
 		{
-			SaveUtility.SetInt("GAME_PLAYED_" + conversation.name, 1, false);
+			SaveUtility.SetInt("GAME_PLAYED_" + conversation.name, 1, save: false);
 		}
 		GFAudioManager.instance.PlayClipFromResources("Audio/SFX/sfx_dialogue_charcloseupsoutro", GFAudioManager.SFX_GROUP, string.Empty);
-		if (FinishedDialogue__BackingField != null)
+		if (FinishedDialogue != null)
 		{
-			FinishedDialogue__BackingField();
+			FinishedDialogue();
 		}
 		if (!preventShowingCommunicatorAfterDialogue && Communicator.instance != null)
 		{
-			Communicator.instance.SetCommunicatorShown(true);
+			Communicator.instance.SetCommunicatorShown(show: true);
 		}
 		if (!preventShowingGUIAfterDialogue && (CityReward.instance == null || (!CityReward.instance.showingRewards && !startingBattle)))
 		{
-			GUICamera.instance.gameObject.SetActive(true);
+			GUICamera.instance.gameObject.SetActive(value: true);
 		}
 		pinchZoomer.allowPinchZoom = true;
 		preventShowingCommunicatorAfterDialogue = false;
@@ -1713,7 +1589,7 @@ public class CityController : MonoBehaviour
 		swipeManager.enabled = true;
 		if (pauseButton != null)
 		{
-			pauseButton.gameObject.SetActive(true);
+			pauseButton.gameObject.SetActive(value: true);
 		}
 	}
 
@@ -1756,12 +1632,12 @@ public class CityController : MonoBehaviour
 			}
 			else
 			{
-				UnityEngine.Debug.LogError("charactersReference is NULL! Which means characterDatabase.characters is NULL! Report this error!");
+				Debug.LogError("charactersReference is NULL! Which means characterDatabase.characters is NULL! Report this error!");
 			}
 		}
 		else
 		{
-			UnityEngine.Debug.LogError("Game Manager Character Database is NULL! Report this error!");
+			Debug.LogError("Game Manager Character Database is NULL! Report this error!");
 		}
 	}
 
@@ -1876,11 +1752,11 @@ public class CityController : MonoBehaviour
 			allowWayPointMovement = false;
 			StartCoroutine("DelayWayPointMovement");
 			wayPoint.transform.position = worldPos;
-			wayPointIcon.transform.parent.gameObject.SetActive(true);
-			wayPointIcon.gameObject.SetActive(true);
-			wayPointIcon.waypointArrow.gameObject.SetActive(true);
+			wayPointIcon.transform.parent.gameObject.SetActive(value: true);
+			wayPointIcon.gameObject.SetActive(value: true);
+			wayPointIcon.waypointArrow.gameObject.SetActive(value: true);
 			wayPointIcon.animator.Play("Landmarkicon_intro_waypoint");
-			LandmarkWayPointClicked(wayPointIcon, true, true);
+			LandmarkWayPointClicked(wayPointIcon, unselectSelected: true, manualWayPointClick: true);
 		}
 	}
 
@@ -2027,7 +1903,7 @@ public class CityController : MonoBehaviour
 		{
 			if (list[i].nearestNode != null)
 			{
-				list[i].nearestNode.SetForceStop(false);
+				list[i].nearestNode.SetForceStop(shouldForceStop: false);
 			}
 		}
 	}
@@ -2044,9 +1920,9 @@ public class CityController : MonoBehaviour
 	private IEnumerator DisplayNoLooseChangeSequence(float displayDelay, float duration)
 	{
 		yield return new WaitForSeconds(displayDelay);
-		looseChangeWarning.SetActive(true);
+		looseChangeWarning.SetActive(value: true);
 		yield return new WaitForSeconds(duration);
-		looseChangeWarning.SetActive(false);
+		looseChangeWarning.SetActive(value: false);
 	}
 
 	public void ExitCityScene()
@@ -2054,9 +1930,9 @@ public class CityController : MonoBehaviour
 		if (!exitingCityScene)
 		{
 			exitingCityScene = true;
-			if (OnExitCityScene__BackingField != null)
+			if (OnExitCityScene != null)
 			{
-				OnExitCityScene__BackingField();
+				OnExitCityScene();
 			}
 		}
 	}

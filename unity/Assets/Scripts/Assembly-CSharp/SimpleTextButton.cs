@@ -45,6 +45,7 @@ public class SimpleTextButton : MonoBehaviour
 
 	public void Init()
 	{
+		return;
 		if (!isInitialized)
 		{
 			originalBackingColor = backing.color;

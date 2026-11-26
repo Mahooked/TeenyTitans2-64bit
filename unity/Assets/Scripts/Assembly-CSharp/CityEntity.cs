@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public abstract class CityEntity : MonoBehaviour
 {
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private Action<CityEntity> StateChanged__BackingField;
-
 	[SerializeField]
 	private string _guid;
 
@@ -23,13 +18,7 @@ public abstract class CityEntity : MonoBehaviour
 
 	private int stateChangeCount;
 
-	public string guid
-	{
-		get
-		{
-			return _guid;
-		}
-	}
+	public string guid => _guid;
 
 	public abstract CityEntityState[] states { get; }
 
@@ -39,31 +28,7 @@ public abstract class CityEntity : MonoBehaviour
 
 	protected bool isFirstState { get; private set; }
 
-	public event Action<CityEntity> StateChanged
-	{
-		add
-		{
-			Action<CityEntity> action = StateChanged__BackingField;
-			Action<CityEntity> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StateChanged__BackingField, (Action<CityEntity>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<CityEntity> action = StateChanged__BackingField;
-			Action<CityEntity> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref StateChanged__BackingField, (Action<CityEntity>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public event Action<CityEntity> StateChanged;
 
 	protected virtual void Awake()
 	{
@@ -117,7 +82,7 @@ public abstract class CityEntity : MonoBehaviour
 		if (!isInitialized)
 		{
 			communicator = Communicator.instance;
-			cameraPinchZoomer = CityController.instance.pinchZoomer;
+			if (CityController.instance != null) cameraPinchZoomer = CityController.instance.pinchZoomer;
 			player = Player.instance;
 			isInitialized = true;
 			isFirstState = true;
@@ -140,18 +105,18 @@ public abstract class CityEntity : MonoBehaviour
 				CoreGameTutorial.instance.StepComplete += CoreGameTutorial_instance_StepComplete;
 			}
 			CityCharacter.CharacterTypeChanged += CityCharacter_CharacterTypeChanged;
-			player.TriggerSet += Player_TriggerSet;
-			player.TriggerUnset += Player_TriggerSet;
-			player.MissionAdded += Player_MissionAdded;
-			player.MissionCompleted += Player_MissionCompleted;
-			player.MissionUpdated += Player_MissionUpdated;
-			player.InventoryChanged += ReevaluateActiveState;
-			player.CurrencyUpdated += Player_CurrencyUpdated;
-			player.RainbowCurrencyUpdated += Player_CurrencyUpdated;
-			player.DefeatedNPC += Player_DefeatedNPC;
-			player.CharacterCollectionChanged += ReevaluateActiveState;
-			player.PartyChanged += ReevaluateActiveState;
-			player.ConversationPlayed += Player_ConversationPlayed;
+			if (player != null) player.TriggerSet += Player_TriggerSet;
+			if (player != null) player.TriggerUnset += Player_TriggerSet;
+			if (player != null) player.MissionAdded += Player_MissionAdded;
+			if (player != null) player.MissionCompleted += Player_MissionCompleted;
+			if (player != null) player.MissionUpdated += Player_MissionUpdated;
+			if (player != null) player.InventoryChanged += ReevaluateActiveState;
+			if (player != null) player.CurrencyUpdated += Player_CurrencyUpdated;
+			if (player != null) player.RainbowCurrencyUpdated += Player_CurrencyUpdated;
+			if (player != null) player.DefeatedNPC += Player_DefeatedNPC;
+			if (player != null) player.CharacterCollectionChanged += ReevaluateActiveState;
+			if (player != null) player.PartyChanged += ReevaluateActiveState;
+			if (player != null) player.ConversationPlayed += Player_ConversationPlayed;
 			ReevaluateActiveState();
 		}
 	}
@@ -173,7 +138,7 @@ public abstract class CityEntity : MonoBehaviour
 			{
 				isFirstState = false;
 			}
-			InitState(activeState);
+			try { InitState(activeState); } catch {}
 		}
 		OnStateChanged(this);
 	}
@@ -366,7 +331,7 @@ public abstract class CityEntity : MonoBehaviour
 		}
 		if (state.usePlayerCharacterType && state.playerCharacterType != 0 && state.playerCharacterType != (CityCharacterType)(-1))
 		{
-			if (CityCharacter.characterType == (CityCharacterType)0)
+			if (CityCharacter.characterType == 0)
 			{
 				return false;
 			}
@@ -531,9 +496,9 @@ public abstract class CityEntity : MonoBehaviour
 
 	protected virtual void OnStateChanged(CityEntity entity)
 	{
-		if (StateChanged__BackingField != null)
+		if (StateChanged != null)
 		{
-			StateChanged__BackingField(entity);
+			StateChanged(entity);
 		}
 	}
 

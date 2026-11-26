@@ -6,11 +6,11 @@ public class CityShopSign : MonoBehaviour
 {
 	public enum State
 	{
-		None = 0,
-		Closed = 1,
-		ClosedUntilDay = 2,
-		ClosedUntilNight = 3,
-		ComingSoon = 4
+		None,
+		Closed,
+		ClosedUntilDay,
+		ClosedUntilNight,
+		ComingSoon
 	}
 
 	public TextMeshPro closedComingSoonText;
@@ -129,20 +129,20 @@ public class CityShopSign : MonoBehaviour
 		{
 			if (standAloneTimeOfDay == TimeOfDay.Day && CityController.instance.communicator.isDayTime)
 			{
-				signObject.SetActive(false);
+				signObject.SetActive(value: false);
 			}
 			if (standAloneTimeOfDay == TimeOfDay.Night && !CityController.instance.communicator.isDayTime)
 			{
-				signObject.SetActive(false);
+				signObject.SetActive(value: false);
 			}
 			if (standAloneTimeOfDay == TimeOfDay.Day && !CityController.instance.communicator.isDayTime)
 			{
-				signObject.SetActive(true);
+				signObject.SetActive(value: true);
 				ShowClosedUntilDaySign();
 			}
 			if (standAloneTimeOfDay == TimeOfDay.Night && CityController.instance.communicator.isDayTime)
 			{
-				signObject.SetActive(true);
+				signObject.SetActive(value: true);
 				ShowClosedUntilNightSign();
 			}
 		}
@@ -173,9 +173,10 @@ public class CityShopSign : MonoBehaviour
 
 	private void ShowClosedSign()
 	{
-		signObject.SetActive(true);
-		closedComingSoonText.gameObject.SetActive(true);
-		closedUntilText.gameObject.SetActive(false);
+		if (signObject == null) return;
+		signObject.SetActive(value: true);
+		closedComingSoonText.gameObject.SetActive(value: true);
+		closedUntilText.gameObject.SetActive(value: false);
 		comingSoonTextKey = "CLOSED";
 		closedComingSoonText.text = Language.Get(comingSoonTextKey, "MENUS,GUI");
 		sunMesh.enabled = false;
@@ -184,9 +185,10 @@ public class CityShopSign : MonoBehaviour
 
 	private void ShowComingSoonSign()
 	{
-		signObject.SetActive(true);
-		closedComingSoonText.gameObject.SetActive(true);
-		closedUntilText.gameObject.SetActive(false);
+		if (signObject == null) return;
+		signObject.SetActive(value: true);
+		closedComingSoonText.gameObject.SetActive(value: true);
+		closedUntilText.gameObject.SetActive(value: false);
 		comingSoonTextKey = "COMING_SOON";
 		closedComingSoonText.text = Language.Get(comingSoonTextKey, "MENUS,GUI");
 		sunMesh.enabled = false;
@@ -195,24 +197,27 @@ public class CityShopSign : MonoBehaviour
 
 	private void ShowClosedUntilDaySign()
 	{
-		signObject.SetActive(true);
-		closedComingSoonText.gameObject.SetActive(false);
-		closedUntilText.gameObject.SetActive(true);
+		if (signObject == null) return;
+		signObject.SetActive(value: true);
+		closedComingSoonText.gameObject.SetActive(value: false);
+		closedUntilText.gameObject.SetActive(value: true);
 		sunMesh.enabled = true;
 		moonMesh.enabled = false;
 	}
 
 	private void ShowClosedUntilNightSign()
 	{
-		signObject.SetActive(true);
-		closedComingSoonText.gameObject.SetActive(false);
-		closedUntilText.gameObject.SetActive(true);
+		if (signObject == null) return;
+		signObject.SetActive(value: true);
+		closedComingSoonText.gameObject.SetActive(value: false);
+		closedUntilText.gameObject.SetActive(value: true);
 		sunMesh.enabled = false;
 		moonMesh.enabled = true;
 	}
 
 	private void ShowNoSign()
 	{
-		signObject.SetActive(false);
+		if (signObject == null) return;
+		signObject.SetActive(value: false);
 	}
 }

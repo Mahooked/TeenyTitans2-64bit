@@ -118,8 +118,9 @@ public class CurrencyGUI : MonoBehaviour
 
 	private void Awake()
 	{
+		if (amountText == null || backing == null) return;
 		Vector3 anchoredPosition3D = amountText.rectTransform.anchoredPosition3D;
-		anchoredPosition3D.x = backing.dimensions.x - backing.transform.localPosition.x - base.transform.localPosition.x;
+		anchoredPosition3D.x = backing.dimensions.x - backing.transform.localPosition.x - transform.localPosition.x;
 		amountText.rectTransform.anchoredPosition3D = anchoredPosition3D;
 		backing.gameObject.SetActive(_showBacking);
 	}
@@ -211,7 +212,7 @@ public class CurrencyGUI : MonoBehaviour
 			{
 				amountText.transform.DOComplete();
 			}
-			amountText.transform.DOLocalMoveX(backing.dimensions.x - backing.transform.localPosition.x - base.transform.localPosition.x, showHideDuration).SetEase(Ease.InBack);
+			amountText.transform.DOLocalMoveX(backing.dimensions.x - backing.transform.localPosition.x - transform.localPosition.x, showHideDuration).SetEase(Ease.InBack);
 		}
 	}
 
@@ -245,14 +246,15 @@ public class CurrencyGUI : MonoBehaviour
 	{
 		if (punchTween != null)
 		{
-			punchTween.Kill(true);
+			punchTween.Kill(complete: true);
 		}
-		base.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
-		punchTween = base.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBounce);
+		transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+		punchTween = transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBounce);
 	}
 
 	private void UpdateAmountText()
 	{
+		if (amountText == null) return;
 		amountText.text = string.Format("{0}<sprite name=\"{1}\">", currentDisplayTotal.ToString((!showCommas) ? string.Empty : "n0"), currencySpriteNames[currencyType]);
 	}
 

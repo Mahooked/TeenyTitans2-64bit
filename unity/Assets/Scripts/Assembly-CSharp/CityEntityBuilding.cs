@@ -25,40 +25,17 @@ public class CityEntityBuilding : CityEntity
 
 	private Coroutine updateTimerRoutine;
 
-	public CityBuilding cityBuilding
-	{
-		get
-		{
-			return _cityBuilding;
-		}
-	}
+	public CityBuilding cityBuilding => _cityBuilding;
 
-	public PathNode entranceNode
-	{
-		get
-		{
-			return _entranceNode;
-		}
-	}
+	public PathNode entranceNode => _entranceNode;
 
-	public Landmark landmark
-	{
-		get
-		{
-			return _landmark;
-		}
-	}
+	public Landmark landmark => _landmark;
 
-	public override CityEntityState[] states
-	{
-		get
-		{
-			return _states;
-		}
-	}
+	public override CityEntityState[] states => _states;
 
 	protected override void Start()
 	{
+		return;
 		originalOverrideSettings = new CityEntityStateBuilding.CityBuildingOverrideSettings();
 		originalOverrideSettings.isOpenOverride = _cityBuilding.isOpen;
 		if (_cityBuilding.sign != null)
@@ -113,7 +90,7 @@ public class CityEntityBuilding : CityEntity
 
 	public void Interact()
 	{
-		CityEntityStateBuilding cityEntityStateBuilding = (CityEntityStateBuilding)base.activeState;
+		CityEntityStateBuilding cityEntityStateBuilding = (CityEntityStateBuilding)activeState;
 		switch (cityEntityStateBuilding.interactConfig.type)
 		{
 		case CityEntityInteractType.StartConversation:
@@ -156,14 +133,13 @@ public class CityEntityBuilding : CityEntity
 
 	private void HandleNewsFlashStarted(NewsFlash newsFlash)
 	{
-		CityEntityStateBuilding cityEntityStateBuilding = base.activeState as CityEntityStateBuilding;
-		if (cityEntityStateBuilding == null)
+		if (!(activeState is CityEntityStateBuilding cityEntityStateBuilding))
 		{
-			Debug.LogError("City Entity Building, Handle News Flash, name: " + base.gameObject.name + ", Active State CANNOT be cast to City Entity State Building, Type: " + ((base.activeState == null) ? "NULL" : base.activeState.GetType().ToString()));
+			Debug.LogError("City Entity Building, Handle News Flash, name: " + gameObject.name + ", Active State CANNOT be cast to City Entity State Building, Type: " + ((activeState == null) ? "NULL" : activeState.GetType().ToString()));
 		}
 		else if (cityEntityStateBuilding.interactConfig == null)
 		{
-			Debug.LogError("City Entity Building, Handle News Flash, name: " + base.gameObject.name + ", BuildingState.interactConfig is NULL");
+			Debug.LogError("City Entity Building, Handle News Flash, name: " + gameObject.name + ", BuildingState.interactConfig is NULL");
 		}
 		else
 		{
@@ -223,8 +199,7 @@ public class CityEntityBuilding : CityEntity
 
 	private void HandleNewsFlashEnded(NewsFlash newsFlash)
 	{
-		CityEntityStateBuilding cityEntityStateBuilding = base.activeState as CityEntityStateBuilding;
-		if (cityEntityStateBuilding != null && cityEntityStateBuilding.interactConfig != null && cityEntityStateBuilding.interactConfig.type == CityEntityInteractType.OpenShop && newsFlash.targetShopUID == cityEntityStateBuilding.interactConfig.shopUID)
+		if (activeState is CityEntityStateBuilding { interactConfig: not null } cityEntityStateBuilding && cityEntityStateBuilding.interactConfig.type == CityEntityInteractType.OpenShop && newsFlash.targetShopUID == cityEntityStateBuilding.interactConfig.shopUID)
 		{
 			_landmark.ResetSpriteIcon();
 			_landmark.zoomedInSettings.hideAtMinScale = true;

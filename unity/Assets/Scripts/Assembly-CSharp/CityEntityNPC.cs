@@ -46,29 +46,11 @@ public class CityEntityNPC : CityEntity
 		}
 	}
 
-	public NPCDefinition npcDefinition
-	{
-		get
-		{
-			return npcDef;
-		}
-	}
+	public NPCDefinition npcDefinition => npcDef;
 
-	public string npcGuid
-	{
-		get
-		{
-			return _npcUID;
-		}
-	}
+	public string npcGuid => _npcUID;
 
-	public string characterName
-	{
-		get
-		{
-			return (!string.IsNullOrEmpty(npcDef.nameKey)) ? Language.Get(npcDef.nameKey, "NPCS,FIGS") : npcDef.name;
-		}
-	}
+	public string characterName => (!string.IsNullOrEmpty(npcDef.nameKey)) ? Language.Get(npcDef.nameKey, "NPCS,FIGS") : npcDef.name;
 
 	public CityNPCNew cityNPC { get; private set; }
 
@@ -89,7 +71,7 @@ public class CityEntityNPC : CityEntity
 			{
 				if (cityNPC != null)
 				{
-					cityNPC.gameObject.SetActive(false);
+					cityNPC.gameObject.SetActive(value: false);
 				}
 				_uiItem.enabled = false;
 				boxCollider.enabled = false;
@@ -101,9 +83,9 @@ public class CityEntityNPC : CityEntity
 			}
 			if (cityNPC != null)
 			{
-				cityNPC.gameObject.SetActive(true);
+				cityNPC.gameObject.SetActive(value: true);
 			}
-			if (base.activeState != null)
+			if (activeState != null)
 			{
 				_uiItem.enabled = true;
 				boxCollider.enabled = true;
@@ -131,13 +113,7 @@ public class CityEntityNPC : CityEntity
 		}
 	}
 
-	public override CityEntityState[] states
-	{
-		get
-		{
-			return _states;
-		}
-	}
+	public override CityEntityState[] states => _states;
 
 	protected override void Awake()
 	{
@@ -153,6 +129,7 @@ public class CityEntityNPC : CityEntity
 	protected override void Start()
 	{
 		base.Start();
+		if (cameraPinchZoomer == null) return;
 		TransformLink component = GetComponent<TransformLink>();
 		if (component != null)
 		{
@@ -251,7 +228,7 @@ public class CityEntityNPC : CityEntity
 
 	public void FaceTarget(Transform target)
 	{
-		Vector3 vector = Camera.main.WorldToViewportPoint(base.transform.position);
+		Vector3 vector = Camera.main.WorldToViewportPoint(transform.position);
 		if (Camera.main.WorldToViewportPoint(target.position).x < vector.x)
 		{
 			if (!npcDef.prefabPreventFlip && cityNPC != null)
@@ -401,17 +378,25 @@ public class CityEntityNPC : CityEntity
 	protected override void InitState(CityEntityState state)
 	{
 		CityEntityStateNPC cityEntityStateNPC = (CityEntityStateNPC)state;
-		string text = ((!string.IsNullOrEmpty(cityEntityStateNPC.prefabPathOverride)) ? cityEntityStateNPC.prefabPathOverride : ((!(npcDef != null)) ? string.Empty : npcDef.prefabPath));
+		string text;
+		if (string.IsNullOrEmpty(cityEntityStateNPC.prefabPathOverride))
+		{
+			text = ((!(npcDef != null)) ? string.Empty : npcDef.prefabPath);
+		}
+		else
+		{
+			text = cityEntityStateNPC.prefabPathOverride;
+		}
 		if (!string.IsNullOrEmpty(text))
 		{
 			if (cityNPC != null)
 			{
-				ObjectPool.PoolObject(cityNPC.gameObject, true);
+				ObjectPool.PoolObject(cityNPC.gameObject, instant: true);
 			}
 			cityNPC = ObjectPool.GetObjectFromResource<CityNPCNew>(text);
 			if (cityNPC != null)
 			{
-				cityNPC.transform.SetParent(base.transform, true);
+				cityNPC.transform.SetParent(transform, worldPositionStays: true);
 				cityNPC.transform.localPosition = Vector3.zero;
 				cityNPC.transform.localRotation = Quaternion.identity;
 				cityNPC.transform.localScale = Vector3.one;
@@ -422,7 +407,7 @@ public class CityEntityNPC : CityEntity
 				}
 				if (_isHidden)
 				{
-					cityNPC.gameObject.SetActive(false);
+					cityNPC.gameObject.SetActive(value: false);
 				}
 			}
 			else
@@ -430,20 +415,20 @@ public class CityEntityNPC : CityEntity
 				Debug.LogError("There is no valid prefab for this City NPC Entity in its currenty state");
 			}
 		}
-		_uiItem.enabled = !_isHidden;
-		boxCollider.enabled = !_isHidden;
+		if (_uiItem != null) _uiItem.enabled = !_isHidden;
+		if (boxCollider != null) boxCollider.enabled = !_isHidden;
 		if (isHidden)
 		{
-			CityController.instance.RemoveActiveNPCEntity(this);
+			if (CityController.instance != null) CityController.instance.RemoveActiveNPCEntity(this);
 		}
 		else
 		{
-			CityController.instance.AddActiveNPCEntity(this);
+			if (CityController.instance != null) CityController.instance.AddActiveNPCEntity(this);
 		}
 		CheckForMissionActivation(cityEntityStateNPC);
 		if (cityEntityStateNPC.immediateConversation != null)
 		{
-			CityController.instance.HandleShowDialogue(cityEntityStateNPC.immediateConversation, false, this, cityEntityStateNPC);
+			CityController.instance.HandleShowDialogue(cityEntityStateNPC.immediateConversation, showExitButton: false, this, cityEntityStateNPC);
 		}
 	}
 
@@ -451,7 +436,7 @@ public class CityEntityNPC : CityEntity
 	{
 		if (cityNPC != null)
 		{
-			ObjectPool.PoolObject(cityNPC.gameObject, true);
+			ObjectPool.PoolObject(cityNPC.gameObject, instant: true);
 			cityNPC = null;
 		}
 		CityController.instance.RemoveActiveNPCEntity(this);
@@ -461,6 +446,7 @@ public class CityEntityNPC : CityEntity
 
 	private void CheckForMissionActivation(CityEntityStateNPC state)
 	{
+		if (state == null) return;
 		if (cityNPC == null || cityNPC.iconHolder == null)
 		{
 			return;
@@ -484,7 +470,7 @@ public class CityEntityNPC : CityEntity
 			MissionCompletedData missionCompletedData = player.GetMissionCompletedData(num);
 			if (GameManager.instance.communicatorDatabase.GetMission(num).type == MissionType.Side && missionData == null && missionCompletedData == null)
 			{
-				cityNPC.iconHolder.gameObject.SetActive(true);
+				cityNPC.iconHolder.gameObject.SetActive(value: true);
 				if (cityNPC.landmark != null)
 				{
 					cityNPC.landmark.Show("gui_citynotifiers_missionbubble");
@@ -492,7 +478,7 @@ public class CityEntityNPC : CityEntity
 			}
 			else
 			{
-				cityNPC.iconHolder.gameObject.SetActive(false);
+				cityNPC.iconHolder.gameObject.SetActive(value: false);
 				if (cityNPC.landmark != null)
 				{
 					cityNPC.landmark.ResetSpriteIcon();
@@ -501,7 +487,7 @@ public class CityEntityNPC : CityEntity
 		}
 		else
 		{
-			cityNPC.iconHolder.gameObject.SetActive(false);
+			cityNPC.iconHolder.gameObject.SetActive(value: false);
 			if (cityNPC.landmark != null)
 			{
 				cityNPC.landmark.ResetSpriteIcon();
@@ -511,11 +497,11 @@ public class CityEntityNPC : CityEntity
 
 	protected override void Player_MissionAdded(int arg1, bool arg2)
 	{
-		CityEntityState objA = base.activeState;
+		CityEntityState objA = activeState;
 		base.Player_MissionAdded(arg1, arg2);
-		if (object.ReferenceEquals(objA, base.activeState))
+		if (object.ReferenceEquals(objA, activeState))
 		{
-			CheckForMissionActivation((CityEntityStateNPC)base.activeState);
+			CheckForMissionActivation((CityEntityStateNPC)activeState);
 		}
 	}
 }

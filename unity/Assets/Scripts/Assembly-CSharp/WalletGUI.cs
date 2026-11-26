@@ -26,24 +26,14 @@ public class WalletGUI : MonoBehaviour
 
 	private float displayTimeCounter;
 
-	public bool isShown
-	{
-		get
-		{
-			return !animator.GetCurrentAnimatorStateInfo(0).IsName("Hidden");
-		}
-	}
+	public bool isShown => !animator.GetCurrentAnimatorStateInfo(0).IsName("Hidden");
 
-	public bool isHidden
-	{
-		get
-		{
-			return animator.GetCurrentAnimatorStateInfo(0).IsName("Hidden");
-		}
-	}
+	public bool isHidden => animator.GetCurrentAnimatorStateInfo(0).IsName("Hidden");
 
 	private void Awake()
 	{
+		if (Player.instance == null) return;
+		if (totalText == null) return;
 		if (currencyType == CurrencyType.Coins)
 		{
 			total = Player.instance.currency;
@@ -272,22 +262,22 @@ public class WalletGUI : MonoBehaviour
 		{
 			if (coinSprite != null)
 			{
-				coinSprite.gameObject.SetActive(false);
+				coinSprite.gameObject.SetActive(value: false);
 			}
 			if (ticketSprite != null)
 			{
-				ticketSprite.gameObject.SetActive(true);
+				ticketSprite.gameObject.SetActive(value: true);
 			}
 			SetTotalText(totalTickets.ToString());
 			return;
 		}
 		if (coinSprite != null)
 		{
-			coinSprite.gameObject.SetActive(true);
+			coinSprite.gameObject.SetActive(value: true);
 		}
 		if (ticketSprite != null)
 		{
-			ticketSprite.gameObject.SetActive(false);
+			ticketSprite.gameObject.SetActive(value: false);
 		}
 		if (currencyType == CurrencyType.Coins)
 		{
@@ -301,6 +291,7 @@ public class WalletGUI : MonoBehaviour
 
 	private void SetTotalText(string newText)
 	{
+		if (totalText == null) return;
 		totalText.text = newText;
 	}
 

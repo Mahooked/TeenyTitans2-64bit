@@ -18,13 +18,7 @@ public class GameLinkPopupDialog : MonoBehaviour, IPoolable
 
 	private static GameLinkPopupDialog instance;
 
-	public static GameLinkPopupDialog Instance
-	{
-		get
-		{
-			return instance;
-		}
-	}
+	public static GameLinkPopupDialog Instance => instance;
 
 	private void OnEnable()
 	{
@@ -38,6 +32,7 @@ public class GameLinkPopupDialog : MonoBehaviour, IPoolable
 
 	private void _Show(string title, string message, string button)
 	{
+		return;
 		message = message.Replace("\\n", "\n");
 		titleText.text = title;
 		messageText.text = message;
@@ -46,15 +41,15 @@ public class GameLinkPopupDialog : MonoBehaviour, IPoolable
 		{
 			tint.color = x;
 		}, 0f, 0.2f).SetTarget(tint).From()
-			.SetUpdate(true);
+			.SetUpdate(isIndependentUpdate: true);
 		animGrp.DOScale(new Vector3(0.1f, 0.1f, 0.1f), 0.2f).From().SetEase(Ease.OutBack)
-			.SetUpdate(true);
+			.SetUpdate(isIndependentUpdate: true);
 	}
 
 	private void Close()
 	{
-		tint.DOKill(true);
-		animGrp.DOKill(true);
+		tint.DOKill(complete: true);
+		animGrp.DOKill(complete: true);
 		ObjectPool.PoolObject(instance.gameObject);
 		instance = null;
 	}

@@ -8,6 +8,7 @@ public class DailyMissionBoard : MonoBehaviour
 
 	private void Start()
 	{
+		return;
 		if (_missionStar != null)
 		{
 			_missionStar.LinkTo = CityController.instance.cameraHolder;

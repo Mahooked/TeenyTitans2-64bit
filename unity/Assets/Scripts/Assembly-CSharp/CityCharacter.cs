@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using DG.Tweening;
 using Photon.Pun;
 using TouchScript.Gestures;
@@ -11,9 +9,6 @@ using UnityEngine;
 [SelectionBase]
 public class CityCharacter : MonoBehaviour
 {
-	[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-	private static Action<CityCharacterType> CharacterTypeChanged__BackingField;
-
 	public static CityCharacterType characterType = CityCharacterType.Robin;
 
 	public static bool waitForTitanChoice;
@@ -209,21 +204,9 @@ public class CityCharacter : MonoBehaviour
 		}
 	}
 
-	public PathNode CurrentNode
-	{
-		get
-		{
-			return _currentNode;
-		}
-	}
+	public PathNode CurrentNode => _currentNode;
 
-	public bool IsMoving
-	{
-		get
-		{
-			return moveTween != null;
-		}
-	}
+	public bool IsMoving => moveTween != null;
 
 	public bool AllowInput
 	{
@@ -389,31 +372,7 @@ public class CityCharacter : MonoBehaviour
 		}
 	}
 
-	public static event Action<CityCharacterType> CharacterTypeChanged
-	{
-		add
-		{
-			Action<CityCharacterType> action = CharacterTypeChanged__BackingField;
-			Action<CityCharacterType> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref CharacterTypeChanged__BackingField, (Action<CityCharacterType>)Delegate.Combine(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-		remove
-		{
-			Action<CityCharacterType> action = CharacterTypeChanged__BackingField;
-			Action<CityCharacterType> action2;
-			do
-			{
-				action2 = action;
-				action = Interlocked.CompareExchange(ref CharacterTypeChanged__BackingField, (Action<CityCharacterType>)Delegate.Remove(action2, value), action);
-			}
-			while ((object)action != action2);
-		}
-	}
+	public static event Action<CityCharacterType> CharacterTypeChanged;
 
 	private void Awake()
 	{
@@ -423,6 +382,7 @@ public class CityCharacter : MonoBehaviour
 
 	private IEnumerator Start()
 	{
+		yield break;
 		UpdateCityCharacter();
 		baseMoveSpeed = moveSpeed;
 		if (cityController != null)
@@ -433,8 +393,8 @@ public class CityCharacter : MonoBehaviour
 		{
 			allNodes = new List<PathNode>(UnityEngine.Object.FindObjectsOfType<PathNode>());
 		}
-		cameraFollow = Camera.main.GetComponentInParent<CameraFollow>();
-		prevTargetCameraFOV = (nextTargetCameraFOV = cameraFollow.targetFOV);
+		cameraFollow = (Camera.main != null) ? Camera.main.GetComponentInParent<CameraFollow>() : null;
+		if (cameraFollow != null) prevTargetCameraFOV = (nextTargetCameraFOV = cameraFollow.targetFOV);
 		GameObject tapEffect = ObjectPool.GetObjectFromResource("Prefabs/City/Tap_Particle_01");
 		ObjectPool.PoolObject(tapEffect);
 		SwipeManager.Instance.SwipeOccurred += HandleSwipeOccurred;
@@ -487,7 +447,7 @@ public class CityCharacter : MonoBehaviour
 
 	public void FaceTarget(Transform target)
 	{
-		Vector3 vector = Camera.main.WorldToViewportPoint(base.transform.position);
+		Vector3 vector = Camera.main.WorldToViewportPoint(transform.position);
 		if (Camera.main.WorldToViewportPoint(target.position).x < vector.x)
 		{
 			if (animator != null)
@@ -511,30 +471,30 @@ public class CityCharacter : MonoBehaviour
 	{
 		if (_robinAnimator != null && controller != _robinAnimator)
 		{
-			_robinAnimator.gameObject.SetActive(false);
+			_robinAnimator.gameObject.SetActive(value: false);
 		}
 		if (_beastBoyAnimator != null && controller != _beastBoyAnimator)
 		{
-			_beastBoyAnimator.gameObject.SetActive(false);
+			_beastBoyAnimator.gameObject.SetActive(value: false);
 		}
 		if (_ravenAnimator != null && controller != _ravenAnimator)
 		{
-			_ravenAnimator.gameObject.SetActive(false);
+			_ravenAnimator.gameObject.SetActive(value: false);
 		}
 		if (_starfireAnimator != null && controller != _starfireAnimator)
 		{
-			_starfireAnimator.gameObject.SetActive(false);
+			_starfireAnimator.gameObject.SetActive(value: false);
 		}
 		if (_cyborgAnimator != null && controller != _cyborgAnimator)
 		{
-			_cyborgAnimator.gameObject.SetActive(false);
+			_cyborgAnimator.gameObject.SetActive(value: false);
 		}
-		controller.gameObject.SetActive(true);
+		controller.gameObject.SetActive(value: true);
 	}
 
 	public static CityCharacterType CityCharacterTypeFromSkinName(string skinName)
 	{
-		return (CityCharacterType)Enum.Parse(typeof(CityCharacterType), skinName, true);
+		return (CityCharacterType)Enum.Parse(typeof(CityCharacterType), skinName, ignoreCase: true);
 	}
 
 	public void UpdateCityCharacter()
@@ -572,9 +532,9 @@ public class CityCharacter : MonoBehaviour
 		animator.animator.RefreshFlipped();
 		animator.Play("idle");
 		DayNightCard.instance.AddAnimationControllerToTint(animator);
-		if (CharacterTypeChanged__BackingField != null)
+		if (CharacterTypeChanged != null)
 		{
-			CharacterTypeChanged__BackingField(characterType);
+			CharacterTypeChanged(characterType);
 		}
 	}
 
@@ -591,7 +551,7 @@ public class CityCharacter : MonoBehaviour
 		for (int i = 0; i < allNodes.Count; i++)
 		{
 			PathNode pathNode2 = allNodes[i];
-			float num2 = Vector3.Distance(pathNode2.transform.position, base.transform.position);
+			float num2 = Vector3.Distance(pathNode2.transform.position, transform.position);
 			if (num2 < num && pathNode2.isActive)
 			{
 				num = num2;
@@ -654,7 +614,7 @@ public class CityCharacter : MonoBehaviour
 		bool flag = false;
 		Ray ray = cameraPinchZoomer.thisCamera.ScreenPointToRay(tapGesture.ScreenPosition);
 		float enter = 0f;
-		new Plane(Vector3.up, base.transform.position).Raycast(ray, out enter);
+		new Plane(Vector3.up, transform.position).Raycast(ray, out enter);
 		RaycastHit[] array = Physics.RaycastAll(ray, enter);
 		RaycastHit[] array2 = array;
 		for (int i = 0; i < array2.Length; i++)
@@ -720,7 +680,7 @@ public class CityCharacter : MonoBehaviour
 			return;
 		}
 		Vector3 point = ray.GetPoint(enter);
-		if (Vector3.Distance(point, base.transform.position) <= 0.35f || cameraPinchZoomer.isZoomedOut || flag2 || (DialogueTree.instance != null && DialogueTree.instance.gameObject.activeInHierarchy) || !allowTapToMove || (cityController != null && cityController.communicator.PopUpActive) || (TitleScreenController.instance != null && TitleScreenController.instance.titleScreenActive) || (CityReward.instance != null && CityReward.instance.showingRewards))
+		if (Vector3.Distance(point, transform.position) <= 0.35f || cameraPinchZoomer.isZoomedOut || flag2 || (DialogueTree.instance != null && DialogueTree.instance.gameObject.activeInHierarchy) || !allowTapToMove || (cityController != null && cityController.communicator.PopUpActive) || (TitleScreenController.instance != null && TitleScreenController.instance.titleScreenActive) || (CityReward.instance != null && CityReward.instance.showingRewards))
 		{
 			StopMove();
 			return;
@@ -730,8 +690,7 @@ public class CityCharacter : MonoBehaviour
 		Vector3 position = point;
 		float maxDistance = enter + extraRayDist;
 		Ray ray2 = cameraPinchZoomer.thisCamera.ScreenPointToRay(tapGesture.ScreenPosition);
-		RaycastHit hitInfo;
-		if (Physics.Raycast(ray2, out hitInfo, maxDistance, LayerMask.GetMask("Buildings", "TapSurface")) && hitInfo.collider != null)
+		if (Physics.Raycast(ray2, out var hitInfo, maxDistance, LayerMask.GetMask("Buildings", "TapSurface")) && hitInfo.collider != null)
 		{
 			bool flag3 = hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("TapSurface");
 			if (flag3)
@@ -864,7 +823,7 @@ public class CityCharacter : MonoBehaviour
 		if (Time.time - lastHitCheck > hitCheckDT)
 		{
 			lastHitCheck = Time.time;
-			int num = Physics.OverlapBoxNonAlloc(base.transform.position + new Vector3(0f, 0.2f, 0f), new Vector3(0.1f, 0.2f, 0.1f), hitResults, Quaternion.identity, LayerMask.GetMask("Pickup"), QueryTriggerInteraction.Collide);
+			int num = Physics.OverlapBoxNonAlloc(transform.position + new Vector3(0f, 0.2f, 0f), new Vector3(0.1f, 0.2f, 0.1f), hitResults, Quaternion.identity, LayerMask.GetMask("Pickup"), QueryTriggerInteraction.Collide);
 			for (int i = 0; i < num; i++)
 			{
 				CityPickup component = hitResults[i].GetComponent<CityPickup>();
@@ -938,18 +897,18 @@ public class CityCharacter : MonoBehaviour
 		{
 		case MoveSwipeType.Screen:
 			num = Mathf.Atan2(result.end2D.y - result.start2D.y, result.end2D.x - result.start2D.x);
-			Move(num * 57.29578f, true);
+			Move(num * 57.29578f, fromSwipe: true);
 			return;
 		case MoveSwipeType.World:
 			num = Mathf.Atan2(result.worldEnd.z - result.worldStart.z, result.worldEnd.x - result.worldStart.x);
-			Move(num * 57.29578f, true);
+			Move(num * 57.29578f, fromSwipe: true);
 			return;
 		}
 		num = Mathf.Atan2(result.end2D.y - result.start2D.y, result.end2D.x - result.start2D.x);
-		if (!Move(num * 57.29578f, true))
+		if (!Move(num * 57.29578f, fromSwipe: true))
 		{
 			num = Mathf.Atan2(result.worldEnd.z - result.worldStart.z, result.worldEnd.x - result.worldStart.x);
-			Move(num * 57.29578f, true);
+			Move(num * 57.29578f, fromSwipe: true);
 		}
 	}
 
@@ -1019,7 +978,7 @@ public class CityCharacter : MonoBehaviour
 						num2 = turningForgivenessOverrideData2.turningForgiveness;
 					}
 				}
-				if (Vector3.Distance(base.transform.position, _prevNode.transform.position) <= num2)
+				if (Vector3.Distance(transform.position, _prevNode.transform.position) <= num2)
 				{
 					moveTween.Kill();
 					moveTween = null;
@@ -1041,9 +1000,9 @@ public class CityCharacter : MonoBehaviour
 					CheckPath();
 					return true;
 				}
-				if ((!useMinInputDistance || Vector3.Distance(base.transform.position, _currentNode.transform.position) <= minInputDistance) && !_curPath.Contains(pathConnection))
+				if ((!useMinInputDistance || Vector3.Distance(transform.position, _currentNode.transform.position) <= minInputDistance) && !_curPath.Contains(pathConnection))
 				{
-					float num3 = Mathf.Atan2(_currentNode.transform.position.z - base.transform.position.z, _currentNode.transform.position.x - base.transform.position.x) * 57.29578f;
+					float num3 = Mathf.Atan2(_currentNode.transform.position.z - transform.position.z, _currentNode.transform.position.x - transform.position.x) * 57.29578f;
 					float num4 = Mathf.Atan2(pathConnection.end.transform.position.z - _currentNode.transform.position.z, pathConnection.end.transform.position.x - _currentNode.transform.position.x) * 57.29578f;
 					float num5 = Mathf.Abs(num4 - num3);
 					if (fromSwipe)
@@ -1075,7 +1034,7 @@ public class CityCharacter : MonoBehaviour
 			{
 				moveTween2.Kill();
 			}
-			moveTween2 = base.transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
+			moveTween2 = transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
 				.OnComplete(() =>
 				{
 					moveTween2 = null;
@@ -1096,8 +1055,8 @@ public class CityCharacter : MonoBehaviour
 		if (!CityController.instance.exitingCityScene)
 		{
 			allowInput = false;
-			SaveUtility.SetString("PlayerPosition", CityController.instance.cityCharacter.gameObject.transform.position.ToString(), false);
-			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+			SaveUtility.SetString("PlayerPosition", CityController.instance.cityCharacter.gameObject.transform.position.ToString(), save: false);
+			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 			CityController.instance.communicator.SaveDayAndTime();
 			CityController.instance.communicator.ResolveActiveNewsFlash();
 			Player.instance.IncreaseCurrentTime(20);
@@ -1128,12 +1087,12 @@ public class CityCharacter : MonoBehaviour
 		{
 			StopMove();
 			animator.Play("idle");
-			CityController.instance.HandleShowDialogue(_currentNode.triggersConvo, false, null, null, true);
+			CityController.instance.HandleShowDialogue(_currentNode.triggersConvo, showExitButton: false, null, null, trackCompletion: true);
 			return;
 		}
 		if (_currentNode.teleportToNode)
 		{
-			EventMessenger.Instance.Raise(new TeleportEvent(_currentNode.teleportNode, false));
+			EventMessenger.Instance.Raise(new TeleportEvent(_currentNode.teleportNode, stopMovement: false));
 		}
 		else if (_currentNode.loadScene && !string.IsNullOrEmpty(_currentNode.loadSceneName))
 		{
@@ -1171,8 +1130,8 @@ public class CityCharacter : MonoBehaviour
 					moveTween2.Kill();
 				}
 				animator.Play("idle");
-				SaveUtility.SetString("PlayerPosition", base.transform.position.ToString(), false);
-				SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+				SaveUtility.SetString("PlayerPosition", transform.position.ToString(), save: false);
+				SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 				if (_currentNode.uiItem != null)
 				{
 					_currentNode.uiItem.enabled = true;
@@ -1237,7 +1196,7 @@ public class CityCharacter : MonoBehaviour
 			animator.Play("idle");
 		}
 		PathNode pathNode = new GameObject("StopNode").AddComponent<PathNode>();
-		pathNode.transform.position = base.transform.position;
+		pathNode.transform.position = transform.position;
 		pathNode.isTemporary = true;
 		pathNode.distToSource = float.PositiveInfinity;
 		pathNode.visited = false;
@@ -1261,8 +1220,8 @@ public class CityCharacter : MonoBehaviour
 		prevTargetCameraFOV = (nextTargetCameraFOV = cameraFollow.targetFOV);
 		if (savePosition)
 		{
-			SaveUtility.SetString("PlayerPosition", base.transform.position.ToString(), false);
-			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, false);
+			SaveUtility.SetString("PlayerPosition", transform.position.ToString(), save: false);
+			SaveUtility.SetString("PlayerScene", SceneManagerHelper.ActiveSceneName, save: false);
 		}
 	}
 
@@ -1307,7 +1266,7 @@ public class CityCharacter : MonoBehaviour
 				}
 				else if (_currentNode.connectedNodes.Count > 0 && _currentNode.connectedNodes[0] == pathConnection.end)
 				{
-					float item = Mathf.Atan2(base.transform.position.z - pathConnection.end.transform.position.z, base.transform.position.x - pathConnection.end.transform.position.x) * 57.29578f;
+					float item = Mathf.Atan2(transform.position.z - pathConnection.end.transform.position.z, transform.position.x - pathConnection.end.transform.position.x) * 57.29578f;
 					int num2 = pathConnection.end.angles.IndexOf(item);
 					if (num2 != -1)
 					{
@@ -1315,12 +1274,12 @@ public class CityCharacter : MonoBehaviour
 					}
 					else
 					{
-						UnityEngine.Debug.LogFormat("***Recovered from error but could not find a replacement prevNode. CharacterPos: {0}  Next Connection End: {1} (Relevant to above Temporary Node Custom Error)", base.transform.position, pathConnection.end);
+						Debug.LogFormat("***Recovered from error but could not find a replacement prevNode. CharacterPos: {0}  Next Connection End: {1} (Relevant to above Temporary Node Custom Error)", transform.position, pathConnection.end);
 					}
 				}
 				else
 				{
-					UnityEngine.Debug.Log("***Recovered from error but current node, " + _currentNode.gameObject.name + ", is not connected to ANY nodes.", _currentNode.gameObject);
+					Debug.Log("***Recovered from error but current node, " + _currentNode.gameObject.name + ", is not connected to ANY nodes.", _currentNode.gameObject);
 				}
 				for (int i = 0; i < _currentNode.connectedNodes.Count; i++)
 				{
@@ -1350,12 +1309,12 @@ public class CityCharacter : MonoBehaviour
 				{
 					clip = _currentNode.triggersMusicNighttime;
 				}
-				cityController.PlayMusic(clip, true);
+				cityController.PlayMusic(clip, crossFade: true);
 			}
-			float num3 = Mathf.Abs(pathConnection.end.transform.position.x - base.transform.position.x);
-			float num4 = Mathf.Abs(pathConnection.end.transform.position.z - base.transform.position.z);
+			float num3 = Mathf.Abs(pathConnection.end.transform.position.x - transform.position.x);
+			float num4 = Mathf.Abs(pathConnection.end.transform.position.z - transform.position.z);
 			float num5 = 0.1f;
-			if (pathConnection.end.transform.position.x < base.transform.position.x && num3 > num5)
+			if (pathConnection.end.transform.position.x < transform.position.x && num3 > num5)
 			{
 				animator.Play("run_side");
 				if (animator.isFlipped)
@@ -1363,7 +1322,7 @@ public class CityCharacter : MonoBehaviour
 					animator.isFlipped = false;
 				}
 			}
-			else if (pathConnection.end.transform.position.x > base.transform.position.x && num3 > num5)
+			else if (pathConnection.end.transform.position.x > transform.position.x && num3 > num5)
 			{
 				animator.Play("run_side");
 				if (!animator.isFlipped)
@@ -1371,7 +1330,7 @@ public class CityCharacter : MonoBehaviour
 					animator.isFlipped = true;
 				}
 			}
-			else if (pathConnection.end.transform.position.z > base.transform.position.z && num4 > num5)
+			else if (pathConnection.end.transform.position.z > transform.position.z && num4 > num5)
 			{
 				animator.Play("run_back");
 				if (animator.isFlipped)
@@ -1379,7 +1338,7 @@ public class CityCharacter : MonoBehaviour
 					animator.isFlipped = false;
 				}
 			}
-			else if (pathConnection.end.transform.position.z < base.transform.position.z && num4 > num5)
+			else if (pathConnection.end.transform.position.z < transform.position.z && num4 > num5)
 			{
 				animator.Play("run_front");
 				if (animator.isFlipped)
@@ -1389,13 +1348,13 @@ public class CityCharacter : MonoBehaviour
 			}
 			if (pathConnection.curveWaypoints.Length > 0)
 			{
-				moveTween = base.transform.DOPath(pathConnection.curveWaypoints, moveSpeed, PathType.CatmullRom, PathMode.Ignore, 5).SetLookAt(0.01f).SetSpeedBased()
+				moveTween = transform.DOPath(pathConnection.curveWaypoints, moveSpeed, PathType.CatmullRom, PathMode.Ignore, 5).SetLookAt(0.01f).SetSpeedBased()
 					.SetEase(Ease.Linear)
 					.OnComplete(OnMoveComplete);
 			}
 			else
 			{
-				moveTween = base.transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
+				moveTween = transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
 					.OnUpdate(OnMoveUpdate);
 			}
 			return true;
@@ -1438,8 +1397,8 @@ public class CityCharacter : MonoBehaviour
 
 	private void MoveToTappedPoint(Vector3 tapPoint)
 	{
-		StopMove(false, false);
-		PathNode nearestPathNodeToPosition = GetNearestPathNodeToPosition(tapPoint, true);
+		StopMove(animate: false, savePosition: false);
+		PathNode nearestPathNodeToPosition = GetNearestPathNodeToPosition(tapPoint, ignoreDisabledNodes: true);
 		List<KeyValuePair<Vector3, PathNode>> list = new List<KeyValuePair<Vector3, PathNode>>();
 		for (int i = 0; i < nearestPathNodeToPosition.connectedNodes.Count; i++)
 		{
@@ -1498,13 +1457,13 @@ public class CityCharacter : MonoBehaviour
 		if (!V3Equal(nearestPathNodeToPosition.transform.position, vector))
 		{
 			waypointGroup.Insert(0, new GameObject("TemporaryWaypointNode").AddComponent<PathNode>());
-			UnityEngine.Debug.Log("Distance from nearest point: " + Vector3.Distance(nearestPathNodeToPosition.transform.position, vector));
+			Debug.Log("Distance from nearest point: " + Vector3.Distance(nearestPathNodeToPosition.transform.position, vector));
 			pathNode3 = waypointGroup[0];
 			pathNode3.transform.position = vector;
 			pathNode3.isTemporary = true;
 			pathNode3.distToSource = float.PositiveInfinity;
 			pathNode3.visited = false;
-			pathNode3.SetForceStop(true);
+			pathNode3.SetForceStop(shouldForceStop: true);
 			if (_currentNode.isTemporary && _currentNode.IsNodeConnectedOrBackup(nearestPathNodeToPosition) && _currentNode.IsNodeConnectedOrBackup(pathNode2))
 			{
 				if (Vector3.Distance(_currentNode.transform.position, nearestPathNodeToPosition.transform.position) < Vector3.Distance(pathNode3.transform.position, nearestPathNodeToPosition.transform.position))
@@ -1562,7 +1521,7 @@ public class CityCharacter : MonoBehaviour
 
 	public bool MoveToNode(PathNode targetNode)
 	{
-		StopMove(false, false);
+		StopMove(animate: false, savePosition: false);
 		PathNode currentNode = _currentNode;
 		if (currentNode == null)
 		{
@@ -1790,7 +1749,7 @@ public class CityCharacter : MonoBehaviour
 	{
 		if (targetNode == null)
 		{
-			UnityEngine.Debug.LogError("MoveToInteractiveNode was given a NULL target node!");
+			Debug.LogError("MoveToInteractiveNode was given a NULL target node!");
 			return false;
 		}
 		interactiveDestinationQueued = true;
@@ -1801,6 +1760,7 @@ public class CityCharacter : MonoBehaviour
 
 	public bool CanReachNode(PathNode targetNode, bool allowInactiveNodes)
 	{
+		if (targetNode == null) return false;
 		PathNode currentNode = _currentNode;
 		if (currentNode == null)
 		{
@@ -1821,6 +1781,7 @@ public class CityCharacter : MonoBehaviour
 				break;
 			}
 			pathNode.visited = true;
+			if (pathNode.connectedNodes == null) continue;
 			int count = pathNode.connectedNodes.Count;
 			for (int i = 0; i < count; i++)
 			{
@@ -1836,6 +1797,7 @@ public class CityCharacter : MonoBehaviour
 				}
 			}
 		}
+		if (allNodes == null) return false;
 		int count2 = allNodes.Count;
 		for (int j = 0; j < count2; j++)
 		{
@@ -1925,7 +1887,7 @@ public class CityCharacter : MonoBehaviour
 	public void SetPosition(PathNode targetNode)
 	{
 		_currentNode = (_prevNode = targetNode);
-		base.transform.position = _currentNode.transform.position;
+		transform.position = _currentNode.transform.position;
 		if (_currentNode.forceStop && _currentNode.uiItem != null)
 		{
 			_currentNode.uiItem.enabled = true;
@@ -1940,7 +1902,7 @@ public class CityCharacter : MonoBehaviour
 		if (moveTween != null && moveTween.IsPlaying())
 		{
 			moveTween.Kill();
-			moveTween = base.transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
+			moveTween = transform.DOMove(_currentNode.transform.position, moveSpeed).SetSpeedBased().SetEase(Ease.Linear)
 				.OnUpdate(OnMoveUpdate);
 			if (moveTween2 != null)
 			{
@@ -1962,7 +1924,7 @@ public class CityCharacter : MonoBehaviour
 			if (flashSaleParticle == null || !flashSaleParticle.gameObject.activeInHierarchy)
 			{
 				flashSaleParticle = ObjectPool.GetObjectFromResource("Prefabs/FlashSale/FlashSale_ParticleTrail_Particle System");
-				flashSaleParticle.transform.parent = base.transform;
+				flashSaleParticle.transform.parent = transform;
 				flashSaleParticle.transform.localPosition = animator.transform.localPosition;
 			}
 			if (!cityController.IsCityVOPlaying())
@@ -2032,9 +1994,9 @@ public class CityCharacter : MonoBehaviour
 		{
 			firstCheck = true;
 			characterType = CityCharacterTypeFromSkinName(GameSkinManager.instance.CurrentSkinName);
-			if (CharacterTypeChanged__BackingField != null)
+			if (CharacterTypeChanged != null)
 			{
-				CharacterTypeChanged__BackingField(characterType);
+				CharacterTypeChanged(characterType);
 			}
 		}
 	}

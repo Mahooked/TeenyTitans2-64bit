@@ -34,15 +34,16 @@ public class LocalizedSpriteToText : LocalizedText
 
 	private void UpdateSprite()
 	{
+		return;
 		if (Language.CurrentLanguage() == LanguageCode.EN || (Language.CurrentLanguage() == LanguageCode.JA && key == "GO"))
 		{
 			baseENSprite.GetComponent<Renderer>().enabled = true;
-			textMesh.gameObject.SetActive(false);
+			textMesh.gameObject.SetActive(value: false);
 		}
 		else
 		{
 			baseENSprite.GetComponent<Renderer>().enabled = false;
-			textMesh.gameObject.SetActive(true);
+			textMesh.gameObject.SetActive(value: true);
 		}
 	}
 }

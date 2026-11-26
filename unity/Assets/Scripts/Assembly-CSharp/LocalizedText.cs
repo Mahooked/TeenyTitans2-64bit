@@ -87,6 +87,10 @@ public class LocalizedText : MonoBehaviour
 		{
 			textMesh = GetComponent<TMP_Text>();
 		}
+		if (textMesh == null)
+		{
+			return;
+		}
 		originalFontAsset = ((!(textMesh.font == null)) ? textMesh.font.name : string.Empty);
 		if (!(textMesh.fontSharedMaterial == null))
 		{
@@ -109,7 +113,7 @@ public class LocalizedText : MonoBehaviour
 		if (textMesh != null && !originalSettingsInit)
 		{
 			originalSettingsInit = true;
-			originalTextSettings = default(OverrideTextMeshSettings);
+			originalTextSettings = default;
 			originalTextSettings.enableAutoSizing = textMesh.enableAutoSizing;
 			if (textMesh.fontSharedMaterial != null)
 			{
@@ -148,6 +152,14 @@ public class LocalizedText : MonoBehaviour
 
 	public void UpdateFont()
 	{
+		if (textMesh == null)
+		{
+			textMesh = GetComponent<TMP_Text>();
+		}
+		if (textMesh == null)
+		{
+			return;
+		}
 		if (!ignoreFontUpdate)
 		{
 			TMP_FontAsset font = Resources.Load("Fonts/" + GetLocalizedFontAsset()) as TMP_FontAsset;
